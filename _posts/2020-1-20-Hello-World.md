@@ -1,8 +1,3 @@
----
-layout: post
-title: You're up and running!
----
-
 ## Analyzing Modern Malware Techniques - Part 2
 ### A case of Powershell, Excel 4 Macros and VB6(part 1 of 2)
 
