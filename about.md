@@ -4,12 +4,12 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+### About me
 
-### More Information
+My name is Dan, and I enjoy Reverse Engineering malware and other things. I hope you'll enjoy your stay here in my blog and learn some new things! 
 
-A place to include any other types of information that you'd like to include about yourself.
+I see myself as a reverse engineer first, I do not care about politics.
 
 ### Contact me
 
-[email@domain.com](mailto:email@domain.com)
+[danusminimus@outlook.com](mailto:danusminimus@outlook.com)
