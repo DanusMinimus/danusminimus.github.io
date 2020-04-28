@@ -101,7 +101,7 @@ Alright, this is obviously very shallow and incomplete and as we progress with o
 
 After you compile Quasar and moved it to an isolated environment you can start the Quasar.
 
-![624x422](uhttps://0x00sec.s3.amazonaws.com/original/2X/8/824d52d1825301954652ab6d63961d7052469e67.png)
+![624x422](https://0x00sec.s3.amazonaws.com/original/2X/8/824d52d1825301954652ab6d63961d7052469e67.png)
 
 This screen should pop up, and this is actually very important. This pop message is a builder for the **X509** Certificate which is responsible for creating a valid SSL stream between the client and the server. Quasar will generate a **X509** cert and bind this cert to all generated clients. You can learn more about SSL here: [https://www.youtube.com/watch?v=iQsKdtjwtYI](https://www.youtube.com/watch?v=iQsKdtjwtYI)
 
