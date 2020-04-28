@@ -61,144 +61,144 @@ We&#39;ll start by explaining the **QuasarClient** class which inherits from the
 
 The **OnClientState** function attempts to send an identification packet to the server. To explore how this message is created we can access the constructor of the **ClientIdentification** Class
 
-![399x626](upload://r0rlXkeTkZx5DyFesQuwFydVm7t.png)
+![399x626](https://0x00sec.s3.amazonaws.com/original/2X/b/bd4776f0e96f7ce2a9484f33bcdeb3067362e22f.png)
 
 Everything here seems rather normal except for these Proto declarations.
 
 Let&#39;s get back to the **Program**. **cs** code block and look at **ConnectClient.Connect**
 
-![511x347](upload://t71Fv6dHLniKD2X7Uw7jsd2eN2k.png)
+![511x347](https://0x00sec.s3.amazonaws.com/original/2X/c/cc0a646e0e710705a98ecc391d29ddb0394668e4.png)
 
 Which leads us back to the base **Client** class
 
-![624x303](upload://vR8VXYvaMeSxaXJ7kVHs0HQgv4s.png)
+![624x303](https://0x00sec.s3.amazonaws.com/original/2X/d/df454af21f34919ff06c4a3bcacfa72396126ef0.png)
 
 Alright! Seems like this the answer to our first goal! It seems that to initiate a connection the client first establishes an SSL Stream, and then it looks like some sort of validation is happening using **ValidateServerCertificate** callback and **AuthnticateAsClient**. Let&#39;s leave these for now as we are just mapping how the code works. Now what happens next? If we access **OnClientState** through the **Client** base class that would lead us to the event handler itself, to find the actual function that triggers on this even we must go to **QuasarClient.cs** and access the reimplementation of the function through there (Gosh I hate OOP). As we saw before, The **OnClientState** function triggers the **client.Send** function
 
-![580x489](upload://xZD88yVZBoqabO8CRVj5m8q3whj.png)
+![580x489](https://0x00sec.s3.amazonaws.com/original/2X/e/ee3f3db47c72def354da276a4684e38c43dd3639.png)
 
 I&#39;ll be honest I don&#39;t know C# but I&#39;m working with my instincts here (much like in assembly haha) and the only thing of value that I see here is **ProcessSendBuffers** so let&#39;s access that and see if it would yield us any results.
 
-![445x526](upload://aLKojyRsAKkHIpo6j2IdLtTmnqf.png)
+![445x526](https://0x00sec.s3.amazonaws.com/original/2X/4/4b7b7e21f93a40ef130b0c20fbbade4043aaf617.png)
 
 Again, using the same strategy as before, lets access **SafeSendMessage** and see where it takes us.
 
-![624x412](upload://eYHse6xBGxdAPS7Jn7Izr653vhq.png)
+![624x412](https://0x00sec.s3.amazonaws.com/original/2X/6/68fb03fbb33a059abb4ffe0618745178fb56056c.png)
 
 Alright, now we don&#39;t want to access **OnClientWrite** as I fear it won&#39;t take us where we want but instead lets access **WriteMessage** which is located within the class called **PayloadWriter**.
 
-![624x349](upload://vAFiTZfmNQ7JKADhS6Pkr7OqPBi.png)
+![624x349](https://0x00sec.s3.amazonaws.com/original/2X/d/dd68734c72d072e02d327ba06636d525627f2604.png)
 
 Jackpot. This function writes a serialized message(I&#39;ll explain what serialization is, don&#39;t worry) to the SSL stream! So, let&#39;s make a small diagram detailing our findings:
 
-![209x602](upload://vUu8byzs72dFqYtMc7rqkZtfJL9.png)
+![209x602](https://0x00sec.s3.amazonaws.com/original/2X/d/dfa60054b38657c1a6822fa07136c9985507f6d7.png)
 
 Alright, this is obviously very shallow and incomplete and as we progress with our dynamic analysis, we could expand on this diagram so let&#39;s compile this Quasar Project on Release settings in Visual Studio and move this entire thing to a virtual machine and start playing around with it.
 
-*** 
+***
 
-### **Building and analyzing a sample:**
+## **Building and analyzing a sample:**
 
 After you compile Quasar and moved it to an isolated environment you can start the Quasar.
 
-![624x422](upload://iAHJDexkyY8xB5OBNAWs8CXhJu7.png)
+![624x422](uhttps://0x00sec.s3.amazonaws.com/original/2X/8/824d52d1825301954652ab6d63961d7052469e67.png)
 
 This screen should pop up, and this is actually very important. This pop message is a builder for the **X509** Certificate which is responsible for creating a valid SSL stream between the client and the server. Quasar will generate a **X509** cert and bind this cert to all generated clients. You can learn more about SSL here: [https://www.youtube.com/watch?v=iQsKdtjwtYI](https://www.youtube.com/watch?v=iQsKdtjwtYI)
 
 After you generate a certificate is time to build a sample, after generating the certification click on the **Builder** and you should be promoted with the builder menu, the most important part is this one:
 
-![624x522](upload://aX837voLm1ZrZzYGyuJgYOJej1N.png)
+![624x522](https://0x00sec.s3.amazonaws.com/original/2X/4/4cc4db33aab3174c47dfd566c0f736feb56193db.png)
 
 I have 2 IPs here; one is the loop back address and the other is the local IP of this Virtual Machine. I would suggest binding the client to the IP of the current virtual machine as it would be possible to emulate connections to the server from the current virtual machine and outside through the host (since the host is also a member within the VMWare local network). You can use any port you like but I&#39;ve used port **27015** because Minecraft. After you built the client you should see it within the current directory of the installed Quasar client. Let&#39;s take it out and open it in **dnspy** which is a **.NET decompiler**
 
-![624x242](upload://7N5Nq8EityScbZyuG2YaCamqKQD.png) 
+![624x242](https://0x00sec.s3.amazonaws.com/original/2X/3/369be6576082d5cb7d9fed32e0d5efc0c1755947.png) 
 
 But we are met with this garbage, but do not worry! We can use **de4dot** which a .NET binary de-obfuscator so let&#39;s run it and we should be met with a clean Quasar client:
 
-![624x292](upload://8x2stSMxH2wzohLfkVH8eZW68Xh.png)
+![624x292](https://0x00sec.s3.amazonaws.com/original/2X/3/3bcd80d3667589874ab183557eac4b63ce9948cb.png)
 
 So what you can see here, is although our Quasar client is clean the symbols are gone but don&#39;t worry as we hold the full source so let&#39;s start debugging. we just want to see if our diagram is correct so lets click start and place a break point on the entry point (I highly suggest renaming these functions and class names according to the source but since I&#39;ve debugged this so many times I already know this know block like my right hand). PLEASE MAKE SURE QUASAR SERVER IS RUNNING. We&#39;ll encounter our first problem with in **Class0.smethod\_3()** which is the second Initialization method:
 
-![340x121](upload://baoXTrg7gC64BWwRDUERJk9v8cJ.png)
+![340x121](https://0x00sec.s3.amazonaws.com/original/2X/4/4e44f309ccdf66459329ebbbbab98c9a9ce05a0d.png)
 
 It will not return **True** , thus causing the client not to execute and exit. but why?! Let&#39;s look inside our source code:
 
-![624x131](upload://6nl8f43vQuayHXzahgu55IIPX0Z.png)
+![624x131](https://0x00sec.s3.amazonaws.com/original/2X/2/2cb07cfb810952510714db8364ba86f89cfcbb91.png)
 
 This if statement which is marked in red, install and connects our client to the server by returning **true** after initializing but it seems it will not execute as the **current path** the client is running from is not equal to the **install path**. To understand what I mean let&#39;s go back to the builder:
 
-![624x516](upload://8Q8vBjcKYk5ArY6TBYt3RvLZw8B.png)
+![624x516](https://0x00sec.s3.amazonaws.com/original/2X/3/3df6279a4ccb5445d3735c1e307d373b1a87b77d.png)
 
 So, this code block checks if the client is currently being run from inside **Appdata\Romaing** (In this specific case) if its not there it would execute the following code:
 
-![478x125](upload://wsiUzKCHBwA4jLOYohCsbjX15Ty.png)
+![478x125](https://0x00sec.s3.amazonaws.com/original/2X/e/e378aa9e3c20101500527f1c022a9d64657b0990.png)
 
 This code handles two problems, one is that the client has detected that another instance of Quasar is running because it detected the same **mutex** that was used within the current client and the other is to Install the client into the computer but adding persistence, killing and deleting the current file and process and relaunching it after it has been moved to our designated install folder. You can enter the **Install** method and read for yourself as the code is very documented. This is very cool cause it gives a researcher a real insight in how malware might be developed. With this knowledge in mind let&#39;s do two things:
 
 1. Update our diagram
 2. Move our client to the designated install directory and start it from there
 
-![624x638](upload://3XVkaFwdRid2ALILp2TvfNjtiiY.png)
+![624x638](https://0x00sec.s3.amazonaws.com/original/2X/1/1bcca32e135cb773a613e7a9b1ec617b02857348.png)
 
 Let&#39;s debug our client from our preferred install directory and see what happens, remember to make sure the quasar server is running in addition I would like to fire up Wireshark to monitor the network(This are my own settings, and the IP address and Port will be different on your machine):
 
-![621x23](upload://16lmMjn67WQpy2AqRwYvidQWGCD.png)
+![621x23](https://0x00sec.s3.amazonaws.com/original/2X/0/07b9c6e11f2fe95b71d87b35811df000a346f6d3.png)
 
 I&#39;ll restart the client from the **Appdata\Roaming** directory and jump straight into the **Client.Connect** function:
 
-![624x46](upload://3ZNRqN1ADcqWLalJkZ9ryRARZc2.png)
+![624x46](https://0x00sec.s3.amazonaws.com/original/2X/1/1c0307c9524697e07401bf2fceb86e45bb6045d6.png)
 
 This time we hit exactly where we want **(Pro tip, you can right click dnspy objects and change their names but hitting Edit method, after hitting enter to confirm the change it would send you inside the edited function – to go back, press backspace).**
 
-![624x97](upload://lePtdrAAXMvpEYM7dH9KGWM5JWr.png)
+![624x97](https://0x00sec.s3.amazonaws.com/original/2X/9/94dad03cfe4fe0dae89ef35c2a50881b631b86f3.png)
 
 We have three places that are of value here, first is the **RemoteCertificationValidationCallBack** which would validate the certification received from the server, the stream reading function and **OnClientState** function that as stated before should send us to the **QuasarClient** registration handler.
 
-![624x297](upload://cFA3tNRgvps3JFuMEJqVcx5ft1B.png)
+![624x297](https://0x00sec.s3.amazonaws.com/original/2X/5/58cd62f79aaa9517d08ae19fff74e194f9605f0f.png)
 
 So **socket.Connect** function should connect me to the server successfully and initiate the first TCP handshake :
 
-![624x29](upload://eOFWhDQcAZGYg0YlVaRaO0bqWUV.png)
+![624x29](https://0x00sec.s3.amazonaws.com/original/2X/6/67d8ece9ce0212ed83d0c080f332a46728accf11.png)
 
 ![](RackMultipart20200427-4-nb5son_html_9f1831d338e48753.png)Next I want to examine what happens when we execute line **287**.
 
-![624x87](upload://1LEitSJqzVMB6kwGEA8m09hRFnS.png)
+![624x87](https://0x00sec.s3.amazonaws.com/original/2X/0/0c651524a48408ec3d641e646b79c1435643fbb4.png)
 
 This is an SSL handshake, but what happened is that the server passed its **X509** cert to the client and the client approved this certification, and this is happening inside **RemoteCertificationValidationCallBack**. Let&#39;s examine how it looks inside the source code
 
-![624x101](upload://d7xNsL8F5wx0OveDuCDjpDc6WIi.png)
+![624x101](https://0x00sec.s3.amazonaws.com/original/2X/5/5bf69ac95a8f87657ef5d26712308003482ea312.png)
 
 As you can see within the # **else** statement which happens when the binary is compiled with debug mode off, there is a function that checks if the clients and the servers certificate match. But look at what happens within the debug mode, it just returns true and because this happens on the client side... our client emulator can do the same to initiate a valid SSL communication with the server. Let&#39;s keep this in mind and continue. What happens next is a bit tricky, in line **290** inside the **Client** Class, **OnClientState** would be called but because it is called from the **Client** class the event registration function would hit and not the event handler function.
 
-![624x164](upload://ubRDXO5JVsSKjqXlYr74dnv98oY.png)
+![624x164](https://0x00sec.s3.amazonaws.com/original/2X/d/d3989424bd85ac937f044ab08bceb3cee6c0e634.png)
 
 We must find the **QuasarClient** class manually and from there navigate to the **OnClientState**** function**(I advise the reader to read this a few times and to play around with the source code to fully understand what this means as this is very important to understand how the client behaves, and having the source code is just a privilege to expand on our researching and coding skills). &quot;But Danus! How will we find it in this mess of unnamed functions? &quot; The answer to that is very simple, let us return to**Class0 **which is** Program.cs:**
 
-![624x114](upload://n2wpOsNyNw8RQhEi9l5ISK0TOOk.png)
+![624x114](https://0x00sec.s3.amazonaws.com/original/2X/a/a17b021202b56c3cd04b28e678375b0e25293700.png)
 
-![427x215](upload://7s6ASmWRsPedJthQshOa2kwf3BU.png)
+![427x215](https://0x00sec.s3.amazonaws.com/original/2X/3/343c9167f8e4d5a25b56cb171e7582278f029dc2.png)
 
 So **Gclass27** is **QuasarClient** , lets rename it so it would be easier to navigate to it, then we&#39;ll access this class by double clicking it and try to find **OnClientState** Manually.
 
-![624x406](upload://tma9RCXP7dYW9EbMTgpsUBNPYz7.png)
+![624x406](https://0x00sec.s3.amazonaws.com/original/2X/c/cdc06de0621729514ee87eec2ad0efa61e26e449.png)
 
 Here it is, let&#39;s place a breakpoint on line **79** , and set a breakpoint inside the **PayloadWriter WriteBytes** function we found earlier which is located inside dnspy under **Stream1, method02**. On line 79 **Class18** is created, and then passed into the send function. Class 18 is called **ClientIdentification** within the source code of Quasar:
 
-![624x355](upload://rifnuMfqIPP2dw5qG6un9Bz2gS6.png)
+![624x355](https://0x00sec.s3.amazonaws.com/original/2X/b/bf4ac3b3b625c7c500a4dd55928ffa1a72dddd9a.png)
 
 Which is the message constructor and if we continue the execution up until the payload writer, we can see the contents of this message:
 
-![624x420](upload://ljCuwhGsL3tQw3Rb8TqdKPPMzJ9.png)
+![624x420](https://0x00sec.s3.amazonaws.com/original/2X/9/9565726de9eedb99624699985a56804ad3e7c0cb.png)
 
-![624x381](upload://xBMT3dlkEhLRerCkcD7dNibEkWl.png)
+![624x381](https://0x00sec.s3.amazonaws.com/original/2X/e/eb8d46a63634307cfbe05a594da7ddad5224ce61.png)
 
 And we just intercepted the entire message. Easy. But how ever I do want to note something strange, there are only 14 members inside the **ClientIdentification** class but here inside the debugged message there are 28?
 
-![502x101](upload://zdFtQf6qUaaNJsnfPsWqqB1f7yK.png)
+![502x101](https://0x00sec.s3.amazonaws.com/original/2X/f/f6d7a5e01006c93dcce010e4378ed6b3d5e4d4fe.png)
 
 In addition, in line 38 the message gets copied into a stream and **serialized** then the length of the message is sent and then the raw bytes returned from the **serializer** function are sent. What in the hell is a **Serializer** and why are there **28** items in the message protocol when there should be only **14**? Also look at the contents of the message after it gets serialized. First let&#39;s debug the program until line **40** and view the contents of the **array** variable by right click it and then clicking on **show memory window**.
 
-![624x223](upload://lREvkWwkwigHKogWBgz24rLWGMu.png)
+![624x223](https://0x00sec.s3.amazonaws.com/original/2X/9/993e49da57198dfd3533f8c359fc7db2de727926.png)
 
 One can recognize some the message text but there are so many extra bytes here that just don&#39;t make sense at all.
 
@@ -212,7 +212,7 @@ Quasar uses something Protobuf which is developed by google, Protobuf Is also a 
 
 Alright, this brings as to these **ProtoMembers** we saw earlier:
 
-![403x557](upload://wyz0mo3Z7zr2MWmbpYqnE5Ze0Bt.png)
+![403x557](https://0x00sec.s3.amazonaws.com/original/2X/e/e42dcec5f3d29e9f62990fb31485c409dfd74e53.png)
 
 This C# class is defined under the **ProtoContract** which lets the compiler know that upon generating these 14 members, to generate a google **protobuf** message with 14 members. That&#39;s why for each class member there is a proto member. Now the protobuf protocol compresses each type (int32, int64, string) differently and that&#39;s why we see a lot of strange bytes in our message. This essentially answers goals 1-3 we set up before.
 
@@ -224,33 +224,35 @@ It&#39;s clear what we must do next:
 
 Important note on number 3, We can safely assume that the only important parts of the message are the **Tag** , **Signature** and **EncryptionKey** members and from the tests I&#39;ve conducted they must remain static and match the generated client exactly. Which makes sense as **Signature** and **EncrpytionKey** are the members which contain information from the **X509** Certificate.
 
-### **Learning to write Pythonic Protobuf messages**
+***
+
+## **Learning to write Pythonic Protobuf messages**
 
 So luckily for us, Google has made a programming interface for creating protobuf message with python and a tutorial which can be found here:[https://developers.google.com/protocol-buffers/docs/pythontutorial](https://developers.google.com/protocol-buffers/docs/pythontutorial)
 
 I&#39;ve crafted a message and script that initiates an SSL connection to our server:
 
-![286x365](upload://tKGCTUyDJhSQSN7qnhGg2tDh6lO.png)
+![286x365](https://0x00sec.s3.amazonaws.com/original/2X/d/d0861a470b488b7e4683e1dc385086a32d0df928.png)
 
 First the message is rather simple, it contains 14 members which match the exact same members in the Quasar client. One can follow the tutorial I&#39;ve linked on how to compile this message.
 
-![527x240](upload://cJmaLuKL5598aDu5H756rAIH1dW.png)
+![527x240](https://0x00sec.s3.amazonaws.com/original/2X/5/593aa8ff1db992dfae87d36df97014d83f002f0c.png)
 
 This little script creates an SSL socket and deals with the verification problem, by always returning 1 on each certificate returned. This is cheating but hey, we are hackers :3
 
-![462x64](upload://8IlgPjwNFvoX3bDMmaahDKbwrpz.png)
+![462x64](https://0x00sec.s3.amazonaws.com/original/2X/3/3d149ad855f09c83a9da4925b10d73518f7e74cd.png)
 
 Now to check our code, lets generate a message and serialize it. Remember that it must be appended with 4 little endian bytes that would represent the total size of our message.
 
-![418x45](upload://jL01i1Xt5u99kbCpQgE3mZxqQUV.png)
+![418x45](https://0x00sec.s3.amazonaws.com/original/2X/8/8a796a2cecf41db894e224a508dcbb3a14c0a239.png)
 
-![440x90](upload://a3jq5Ov2a5ersFrxPW8cJSu5740.png)
+![440x90](https://0x00sec.s3.amazonaws.com/original/2X/4/46759e82bc6340dea1ef85fb874b9b6249b0994c.png)
 
 So, I&#39;ve created a little function that would return exactly that and prefix it to the serialized message, now let&#39;s generate our message, serialize and print it and see if it matches to what Quasar generates.
 
-![323x25](upload://pmgDWlorLTk2bm2WyDkV97NEiWG.png)
+![323x25](https://0x00sec.s3.amazonaws.com/original/2X/b/b1bac29e3cdc61567bb3cad10739a90843d39d2e.png)
 
-![378x22](upload://710V1KswedxQ69lnSHY51OpIJEA.png)
+![378x22](https://0x00sec.s3.amazonaws.com/original/2X/3/312c95dc21975fc09a7cacd88859ca8eb4c6bf38.png)
 
 As you can see, there is a problem with the first bytes. The message generated by python matches exactly (ignore the prefixed size 0xdf 0x02 0x00 0x00) to the C# message besides the first three bytes. **0x0A, 0xCF, 0x05.** What are these prefixed bytes? I didn&#39;t know so I&#39;ve asked on stack overflow:
 
@@ -258,9 +260,9 @@ As you can see, there is a problem with the first bytes. The message generated b
 
 After a small research, I determined that this prefix can only be the length of the message. As the rest of the python generated message matches the C# generated python message exactly. In addition, if we edit the variables the Quasar Client message is sending, this first prefix field would chance as we increase the length of our message. For example – lets debug our Quasar client instance again and break on the Payload Writer function at line 36 just before the message is sent and edit the message contents by adding an arbitrary amount of **&#39;A&#39;** characters to one of the fields.
 
-![624x105](upload://ygbfbZ5HJasT5nEZUx3fVJhMPSc.png)
+![624x105](https://0x00sec.s3.amazonaws.com/original/2X/f/f01e2d1976fcce2e011a6dc4b1c84f3cbdac509c.png)
 
-![548x108](upload://xVt6fKsEGHbUhbVcM9cwEryxYsr.png)
+![548x108](https://0x00sec.s3.amazonaws.com/original/2X/e/edc6ce64d4a55b696ec4cd78076b4d750b1f1c8b.png)
 
 As you can see, the message was changed and from 0xcf the second byte turned to 0xf5. The difference between 0xF5-0xCF is 38 decimal which is the exact amount of &#39;A&#39; chars I&#39;ve added. To craft this kind of integer length encoder we must first understand how this byte sequence is encoded and luckily for us Google won&#39;t keep that a secret:
 
@@ -268,35 +270,34 @@ As you can see, the message was changed and from 0xcf the second byte turned to 
 
 I won&#39;t go into detail explaining how this entire thing works, I&#39;ve did that for my own self-interest (and I advise you do that as well, [@marcgravell](https://twitter.com/marcgravel) on stack overflow explained it perfectly) but understanding this interferes with our main goal. Do we have to reimplement the entire thing from scratch when Google Protobuf is open source? The answer to that is no.
 
-![624x33](upload://w1XTJ3DsvsBXZB1GtOoJgXkV9cp.png)
+![624x33](https://0x00sec.s3.amazonaws.com/original/2X/e/e07e767e4ccb9a279a80096650845d4172ffeebd.png)
 
-![363x261](upload://5o206JradAYDbHGVzYLFZP7300P.png)
+![363x261](https://0x00sec.s3.amazonaws.com/original/2X/2/25c252b764cb8cf951480d05e398ef7ac4d49ceb.png)
 
 In these two code blocks, I&#39;m serializing a message and passing its length into a function I&#39;ve &quot;Borrowed&quot; [from the encoder script on protobuf GitHub](https://github.com/protocolbuffers/protobuf/blob/master/python/google/protobuf/internal/encoder.py). I&#39;ve edited it a little bit by making it always prepend the **0x0A** byte to final result which represents the field number and field type. Since this message is prefixed to our generated message its always going to be of type 2 ( **length prefix** ) and field number 1 this combo will always yield byte **0x0A**.
 
-![289x18](upload://juWnLMTZOSlqJHgPwIbEnE6rLlk.png)
+![289x18](https://0x00sec.s3.amazonaws.com/original/2X/8/88a8b450c3eac9a4a4c9813974d8d0199a757f2e.png)
 
 Boom. Now our pythonic message matches the C# Quasar generated message.
-
 Now, on to the connection part:
 
-![289x134](upload://dsiwi9KYRlHzgfqDfjJrURyGKYR.png)
+![289x134](https://0x00sec.s3.amazonaws.com/original/2X/5/5e4f2da229b52cee9646e5c2868744543755e925.png)
 
 This little code block will connect to our server and perform a handshake with it. Which will trigger the server to pass its **X509** certification, then our verification function will trigger:
 
-![442x78](upload://6xhjiliOkk45p8xAuwwDVGa4fnh.png)
+![442x78](https://0x00sec.s3.amazonaws.com/original/2X/2/2dd0165b6986f1efa2c20a2dec22bc10e9ecc8df.png)
 
 Which will always return True. Then we&#39;re going to write our serialized message, prefixed with the length of the message + the length of the message serialized using this code block:
 
-![470x134](upload://y6BXmFeSHe8etNbFyrKgJerHPce.png)
+![470x134](https://0x00sec.s3.amazonaws.com/original/2X/e/ef0942df4c531dbb814e814c2014574b8e097b9a.png)
 
 First at line 97, I serialize the message. Then I append a prefix which represents the size of the message to the message. Finally, I calculate the entire size of the message including the prefix, convert the size to little endian byte format and append that as well to the serialized message. The message is sent over to the server and we can view this inside Wireshark:
 
-![624x92](upload://akj6FENsriwD9GnibR3BXTwEBKI.png)
+![624x92](https://0x00sec.s3.amazonaws.com/original/2X/4/48616c8495e7c671deaeb50be0c7ba8e02617604.png)
 
 Amazing! and if we check our quasar server, we can see that:
 
-![624x73](upload://xm8GEfIcIlr2FLTAfO2XLHhhjfM.png)
+![624x73](https://0x00sec.s3.amazonaws.com/optimized/2X/e/e9c8703a863d935e004c215536fe961e0f623b86_2_936x109.png)
 
 I&#39;ve sent a custom message that was registered with no problem! Now I headed out to learn how Intezers tool works so I could turn my little test python script to a full Quasar RAT tracker.
 
@@ -314,29 +315,29 @@ Next please follow the installation guide here [https://intezer.github.io/MoP/do
 
 If you are using sublime text editor, you can click on **Project-\&gt;Add Folder to project-\&gt;navigate to the downloaded tool** and this should open a comfortable view of the project.
 
-![624x472](upload://pB2WAu6pY8IS0cmfYN7x6H5LrOF.png)
+![624x472](https://0x00sec.s3.amazonaws.com/optimized/2X/b/b36670c4cac3d583133cac6feb922403ab16ba29_2_936x708.png)
 
 Please open **orchestrator.py** and remove the first line &quot;#!/usr/bin/env python3.6&quot; as it causes the tool not to run on any version other than python 3.6. so, this is our main script for this tool. Scroll to line 46, as you can see this a command parser and in our case we&#39;ll be using the option described in line 53 – **targets-config** which allows the tool to connect to multiple clients, so please open **targets.yaml** and remove the hashes with in it.
 
-![486x142](upload://eQ7IUnabU1okD5ktIx6JvTp6g3j.png)
+![486x142](https://0x00sec.s3.amazonaws.com/original/2X/6/6802d4fa67c6fb6441f13d871da94cba8a22becd.png)
 
 I&#39;ve already set it up to run with my instance of quasar but you can keep yours as is for now as we haven&#39;t set up our plugin yet. This tool sets up multiple targets, by specifying the IP, Port and the plugin for the target.
 
 If we go back to the main script:
 
-![624x182](upload://mEGRCidF7dLNpn2IzFXLis4GL4G.png)
+![624x182](https://0x00sec.s3.amazonaws.com/original/2X/9/9ec95dac31cd56bcf4a657d135debd2a91d5fe4e.png)
 
 What happens is at line 54, the **targets.yaml** file is parsed, and the contents of it are extracted. Then function connect\_targets() is called:
 
-![612x78](upload://mexdjK2uDMmWK1att1mhkmBuBgy.png)
+![612x78](https://0x00sec.s3.amazonaws.com/original/2X/9/9bd4775dc44fea2df5db1536e29822300c3de4b6.png)
 
 Which for each target found in the targets.yaml file executes the connect() function:
 
-![624x215](upload://pKAFPo5QnbQbCtPEvCOIPNKJhit.png)
+![624x215](https://0x00sec.s3.amazonaws.com/original/2X/b/b47aa0da02e84438fcb1ee458e9d07eee02ee2d5.png)
 
 The connect function is found at line 22, it starts a thread with a callback function called \_connect(), it passes the ip, port and the plugin into this function. \_connect is called at line 27. First it imports a plugin from the plugin folder, then at line 29 it uses the plugin constructor to connect to the rat and then uses the plugins connect, register and loop functions. All the plugins that are created extend all the properties from the puppet\_rat.py class. So, let&#39;s open it up:
 
-![624x524](upload://oj2TwEEDg8neAOvI0PJ2O8SkJej.png)
+![624x524](https://0x00sec.s3.amazonaws.com/original/2X/a/aa5b5ab1484183c45c166be9d5f7809205e9b76b.png)
 
 At line 16, we can see the constructor for this class which as we saw before at the main script is triggered in line 29. Here at line 16 the constructor sets up various client attributes. The ip, port, the fake process id, the logger which is used to log all events and the conn variable which is used to represent a socket. The most important functions are:
 
@@ -350,23 +351,23 @@ It&#39;s clear what we must bring from our test script. First lets start with th
 
 Now I&#39;m going to review my plugin code line by line:
 
-![624x307](upload://iATBDqD03vMRsvarZyC0B1Dv0pK.png)
+![624x307](https://0x00sec.s3.amazonaws.com/original/2X/8/8252dd4099e83ecec06b769be8a3c7c95a5af7d4.png)
 
 First let&#39;s discuss the constructor which as you can see extends the PuppetRat class, thus inheriting all its properties. I&#39;ve added the message members so they can be edited on the fly. The only messages that a user has to set by himself are the **Tag**, **EncryptionKey** and the **Signature** as these interchange between client to client. In addition, I&#39;ve added a protobuf message member called message which can be seen in line 70. It creates an uninitialized Quasar message.
 
-![507x494](upload://M3xOXK1kRZGGfEl1cLjsiePY0t.png)
+![507x494](https://0x00sec.s3.amazonaws.com/original/2X/0/056eb1594ecca0467ec3254902d3d503bb2c9395.png)
 
 I&#39;ve added 4 more custom functions that would allow the researcher to change the tag, id, key, and signature as he would seem fit and function that would create and set a protobuf message. The function \_\_del\_\_ is a standard python function which executes when the object gets destroyed and in this case it would just close the socket connection created for Quasar.
 
-![624x199](upload://nBmQDpMP8aUK8j1jm4PFxcbQttt.png)
+![624x199](https://0x00sec.s3.amazonaws.com/original/2X/a/a56b61f794880bd4b5639896320b2e705b163ae7.png)
 
 The re implementation of the connect function which is very similar to the one in the test script. Before we review it, please download the utils.py file from my repo and place it inside the **stage props** folder as I&#39;ve added several functions to it. First in line 112 I create a tcp socket, then I bind that socket to a SSL socket and context. The **create\_ssl\_sock** is a custom functions ive added to the **utils** script. Much like in our test script all it does is create an SSL socket and binds a context to it so we can verify the quasar certificate. Then, a connect is started to the Quasar server and a handshake is attempted. If all goes well, the logger should display a proper message.
 
-![465x165](upload://jpgm3mkldRCYRDS7faUJhD7iBwo.png)
+![465x165](https://0x00sec.s3.amazonaws.com/original/2X/8/880465896765f9264f5066cfa3caa8a971cdce2c.png)
 
 Then we move on to the loop function, which is very primitive at the moment, all it does is receive messages from the server and displays them.
 
-![624x165](upload://zLPRjfWiCk9SxFQ1Plin6el7RND.png)
+![624x165](https://0x00sec.s3.amazonaws.com/original/2X/f/fab464d951296ea63112cf98514f31e78b65be31.png)
 
 We move on to the register function, which is the final one, all it does is mimic exactly what would test script does. It constructs a Quasar message and sends it to the server. I wouldn&#39;t go into length about this as we discussed this already. Now finally, let&#39;s see how this run!
 
@@ -374,12 +375,12 @@ Start your virtual machine and launch the Quasar server, then start a shell with
 
 &quot; **py orchestrator.py –targets-config targets.yaml&quot;**
 
-![624x66](upload://arHQpUXunE5tcBwNZ5dsvWbyk8V.png)
+![624x66](https://0x00sec.s3.amazonaws.com/original/2X/4/493789c9752b11008147fca9e8ab9bac432d7599.png)
 
 **YES!** Alright let&#39;s see what happens if we try to execute functions from the server itself by forcing the client to open a message box:
 
-![624x253](upload://dsd7s5yPQqxUBCHS4X4Ps2h8t2d.png)
-![624x127](upload://zEYAsjQiu8u1sXUtlGHD7SYD77X.png)
+![624x253](https://0x00sec.s3.amazonaws.com/original/2X/5/5e4ca85383cc960a40269143307c1ba70111c80d.png)
+![624x127](https://0x00sec.s3.amazonaws.com/original/2X/f/f9ede6563b0519c96d7946a6fccff59e487ca511.png)
 
 Amazing! As you can see, we received a new message which needs to be deserialized. This would require some more effort into reversing more messages but from our gained knowledge it shouldn&#39;t be too hard 😊
 
