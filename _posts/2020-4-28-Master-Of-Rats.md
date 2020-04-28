@@ -1,6 +1,6 @@
 ---
 layout: post
-title: The Art of Malware
+title: Master of Rats
 ---
 	
 # **Creating your own Malware Tracker**
