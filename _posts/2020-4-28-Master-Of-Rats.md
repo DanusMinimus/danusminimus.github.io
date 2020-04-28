@@ -10,7 +10,8 @@ The malware is very interesting and not too complicated too understand. In the b
 
 But alas my Linux knowledge can be summed up with the fact that I know that &quot; **ls -la**&quot; should print the contents of a directory. But the idea of creating a malware tracking tool was eating me up day and night. After a short search I&#39;ve stumbled upon the following tool created by [Intezer](https://intezer.com/?utm_campaign=Brand%20ads&amp;utm_source=Google%20Ads&amp;utm_content=Brand&amp;utm_term=%2Bintezer&amp;utm_campaign=0719+RLSA&amp;utm_source=adwords&amp;utm_medium=ppc&amp;hsa_acc=6013738437&amp;hsa_cam=9281250457&amp;hsa_grp=94310168375&amp;hsa_ad=417088374601&amp;hsa_src=g&amp;hsa_tgt=aud-877982745810:kwd-765886859489&amp;hsa_kw=%2Bintezer&amp;hsa_mt=b&amp;hsa_net=adwords&amp;hsa_ver=3&amp;gclid=CjwKCAjwv4_1BRAhEiwAtMDLsu6-ldJnan200Cnv305zpq8XjqohXDXEJnVf-i9srcKGV46nfLgwJBoC5ioQAvD_BwE). This tool is found here [https://github.com/intezer/MoP](https://github.com/intezer/MoP). This tool is a small python project allows a researcher to fake an infected malware client by simulating an OS environment. All the researcher must do is reverse a malware network protocol. No honeypots, no virtual machines no nothing. Sounds easy right? I though the same. I looked up any open source malware tools on GitHub and found [Quasar](https://github.com/quasar/QuasarRAT), which is an open source RAT which is used by people for malicious purposes. Great candidate for our little experiment! And so, I have set of to become the Master of RATs.
 
-![624x351](http://tcm3i7nNHghfhOVwBljFWHopOHb.jpeg)
+![624x351](https://lh4.googleusercontent.com/Qwx_s0RIMeJivhbBg3rp2ZUB62Zwkm7OP4UayF03krIeaoRHq6IH3eWTisMajLtKIyBuratlwbnAjXkRH4TW88w0TRO5Lt2f3DbmZeNYDyiWDMCtg0RO6cuN0DoTEae_dfD-_2FZnFMf1fDFMQ)
+
 
 **Required Knowledge:**
 
@@ -44,19 +45,19 @@ Before we even think about using Intezers tool we must reverse Quasar. What are 
 
 We load up the downloaded Quasar source into Visual Studio 2019 Community which can be downloaded for free [here](https://visualstudio.microsoft.com/vs/community/) and we are greeted with this:
 
-![306x181](upload://72nMHmFef3pkIxS7No5Pa3DWsE4.png)
+![306x181](https://0x00sec.s3.amazonaws.com/original/2X/3/31543236fe2db805211d3955fa32062265481a64.png)
 
 We are interested in the client code, how ever just for reference and as we will be dealing with the others – Common contains various utilities and Server contains the code for the Server application. All C# programs start with **Program.cs** as far as I managed to figure out so we will start there as well, let&#39;s open **Quasar.Client** and find **Program.CS**.
 
-![624x431](upload://zw9oEegwDzjqpHeTTLoiYhOX9AD.png)
+![624x431](https://0x00sec.s3.amazonaws.com/original/2X/f/f8ee801e84ee698ef4cabbccaa624cc47c3de82b.png)
 
 Ah, I wish this was C ☹. Anyway, we can see a few things of interest in this little statement if we right click **QuasarClient** and then click on go to implementation we will drop on where most of the juice happens in this code.
 
-![624x163](upload://kDW5V0GzWwVvE1CvC8KfyWAo78d.png)
+![624x163](https://0x00sec.s3.amazonaws.com/original/2X/9/90af3044a3e23a57d466bc157388d9217fabc459.png)
 
 We&#39;ll start by explaining the **QuasarClient** class which inherits from the **Client** Class. The job of this class is to manage all the events that that accrue within the client, It has a special function to handle the registration of the bot ( **OnClientState** ), it has a function to handle message reading events ( **OnClientRead** ) and failing events ( **OnClientFail** ).
 
-![624x513](upload://yJHrL88QKVz899LDC1O4ZZTNeTl.png)
+![624x513](https://0x00sec.s3.amazonaws.com/original/2X/f/f3746ac535c562e80818b056fdc45a9195fcd627.png)
 
 The **OnClientState** function attempts to send an identification packet to the server. To explore how this message is created we can access the constructor of the **ClientIdentification** Class
 
