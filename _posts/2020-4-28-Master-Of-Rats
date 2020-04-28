@@ -1,7 +1,9 @@
-layout 	title
-post
+---
+layout: post
+title: The Art of Malware
+---
 	
-# **Master of RATs**
+# **Creating your own Malware Tracker**
 ***
 # **Preface**
 
