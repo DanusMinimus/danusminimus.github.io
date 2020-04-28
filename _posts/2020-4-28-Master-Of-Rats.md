@@ -2,11 +2,8 @@
 layout: post
 title: Master of Rats
 ---
-	
-# **Creating your own Malware Tracker**
-***
-# **Preface**
 
+# **Preface**
 One day I was skimming through [abuse.ch](https://urlhaus.abuse.ch/browse/). This website collects user submitted malicious or suspicious URLs and I&#39;ve stumbled through something very interesting. I saw that a user that goes by the twitter handle [@Gandylyan1](https://twitter.com/Gandylyan1) is uploading huge amounts of daily samples of the same malware variant called **Mozi** ([You can read about it here](https://blog.netlab.360.com/mozi-another-botnet-using-dht/)). This botnet is an IoT P2P botnet that seems to spread like crazy. Gandy is uploading samples as I write this article and there are currently 24,709 IPs uploaded to abuse.ch, and it seems gandy is the only one uploading them. 
 
 The malware is very interesting and not too complicated too understand. In the basic gist it spreads through IoT devices using known exploits and brute forcing attacks, if it manages to connect to an IoT device it starts an http service on that device and uploads itself to a random port and hosts the sample on the IoT device&#39;s IP address. This peer scans and attacks the network and when it takes over another device this newly infected device will receive the mozi sample from the previously infected peer. This is a parasite. I was so excited about this that I&#39;ve decided to set off with a simple goal in mind – to build a tracker for this botnet. 
