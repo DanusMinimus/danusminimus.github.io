@@ -10,7 +10,7 @@ The malware is very interesting and not too complicated too understand. In the b
 
 But alas my Linux knowledge can be summed up with the fact that I know that &quot; **ls -la**&quot; should print the contents of a directory. But the idea of creating a malware tracking tool was eating me up day and night. After a short search I&#39;ve stumbled upon the following tool created by [Intezer](https://intezer.com/?utm_campaign=Brand%20ads&amp;utm_source=Google%20Ads&amp;utm_content=Brand&amp;utm_term=%2Bintezer&amp;utm_campaign=0719+RLSA&amp;utm_source=adwords&amp;utm_medium=ppc&amp;hsa_acc=6013738437&amp;hsa_cam=9281250457&amp;hsa_grp=94310168375&amp;hsa_ad=417088374601&amp;hsa_src=g&amp;hsa_tgt=aud-877982745810:kwd-765886859489&amp;hsa_kw=%2Bintezer&amp;hsa_mt=b&amp;hsa_net=adwords&amp;hsa_ver=3&amp;gclid=CjwKCAjwv4_1BRAhEiwAtMDLsu6-ldJnan200Cnv305zpq8XjqohXDXEJnVf-i9srcKGV46nfLgwJBoC5ioQAvD_BwE). This tool is found here [https://github.com/intezer/MoP](https://github.com/intezer/MoP). This tool is a small python project allows a researcher to fake an infected malware client by simulating an OS environment. All the researcher must do is reverse a malware network protocol. No honeypots, no virtual machines no nothing. Sounds easy right? I though the same. I looked up any open source malware tools on GitHub and found [Quasar](https://github.com/quasar/QuasarRAT), which is an open source RAT which is used by people for malicious purposes. Great candidate for our little experiment! And so, I have set of to become the Master of RATs.
 
-![624x351](upload://tcm3i7nNHghfhOVwBljFWHopOHb.jpeg)
+![624x351](http://tcm3i7nNHghfhOVwBljFWHopOHb.jpeg)
 
 **Required Knowledge:**
 
