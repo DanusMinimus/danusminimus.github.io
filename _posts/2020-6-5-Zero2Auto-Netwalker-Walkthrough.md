@@ -30,7 +30,7 @@ The script might be long and scary but do not fear, for all we need to do is exa
 
 ![624x17](https://lh3.googleusercontent.com/vu5keseZVPcwlDAp2N6UqND4pJlgalJ5_TGnS-PfHwiDfd-4G5jh6Z_GriNb8PbS4NV1D2rFFAgF4jridEak-COhgBn7LOwHmdLOJrhYdERKpqECUbVeu9grbIsCSurs5qJBTEJbD0BbtgKyZQ)
 
-The first command “Invoke Expression” will simply run the command wrapped inside “$()”, within this statement we can see that the statement will perform base64 decoding. So to decode the first stage obfuscation, we can simply remove the Invoke expression command and pipe the entire decoded string to a text file using **“ Out-File -FilePath .\Process.txt”** and this would result in the following decode payload. The second stage payload is nothing but the same scary mess, but this time a long bytearray is being decrypted within a loop, it simply **XORs** each byte within that array with **0x47**.
+The first command “Invoke Expression” will simply run the command wrapped inside “$()”, within this statement we can see that the statement will perform base64 decoding. So to decode the first stage obfuscation, we can simply remove the Invoke expression command and pipe the entire decoded string to a text file using **“ Out-File -FilePath .\Process.txt”** and this would result the decode payload stored in Process.txt. The second stage payload is nothing but the same scary mess, but this time a long bytearray is being decrypted within a loop, it simply **XORs** each byte within that array with **0x47**.
 
 Again, all I decide to do is to pipe the final product to a text file:
 
@@ -46,7 +46,7 @@ Let’s throw the file in **PEBear** and see if we can find anything interesting
 
 ![516x164](https://lh6.googleusercontent.com/pUz5WfrL3rEFQDWg2q7z2ORZbxFtsFkfY4jB_7pgmlTnz5HcsLR6H_ApAqlvIFaDilwvukt1zLUqjv8iZGmZygOtMjk_9D_WsxsEF9Z1z50ZUCF0ySPzZ0XUQYvq2aBQClJASCKMXP7WSZ0v9g)
 
-What is this? Ah yes, do not worry the malware author corrupted the PE File header and replaced the “MZ” characters with the header with a word value 0xDEAD (remember this).
+What is this? Ah yes, do not worry the malware author corrupted the PE File header and replaced the “**MZ**” characters with the header with a word value **0xDEAD** (remember this).
 
 What I’ll do, is replace this value using **HxD** to a proper PE header so we could examine it within IDA and Resource Hacker:
 
@@ -54,11 +54,11 @@ What I’ll do, is replace this value using **HxD** to a proper PE header so we 
 
 Much better!
 
-Usually, upon reaching this point I would perform basic static analysis by examining the file’s strings, view any anomalies within its header and examine its resources. Then I would perform basic dynamic analysis by running the sample and monitor it, but we must remember our initial goal – we must expand upon Vitaly’s findings and find any worthwhile material we can explore ourselves. So first let’s examine Vitaly’s first mention of CRC32:
+Usually, upon reaching this point I would perform basic static analysis by examining the file’s strings, view any anomalies within its header and examine its resources. Then I would perform basic dynamic analysis by running the sample and monitor it, but we must remember our initial goal – we must expand upon Vitaly’s findings and find any worthwhile material we can explore ourselves. So first let’s examine Vitaly’s first mention of **CRC32**:
 
 ![508x677](https://lh4.googleusercontent.com/cUyOK1_FlPyr84iYOE2_gj1xey_4gfmuzN_gFD7PPhGQO5itWAkER084DexKR6Hz5sspMnTL5DORQh4vQ27s-fjHl02sIXqbEoU0iiN8eMPJJKwxDB-EKFv9u-zCa_nHW5mLe5nmmQM39O_zEg)
 
-How did Vitaly know this is indeed a **CRC32** hashing algorithm? Well lets start by utilizing the KANAL plugin within PEid, I’ll load the malware into **PEid** and launch the **KANAL** tool:
+How did Vitaly know this is indeed a **CRC32** hashing algorithm? Well lets start by utilizing the **KANA**L plugin within **PEid**, I’ll load the malware into **PEid** and launch the **KANAL** tool:
 
 ![372x172](https://lh5.googleusercontent.com/p89cQrPeYnyKXiOJrQp_RASIt5rfmdSwlawDMVddFTFpvgzZq2uzTvs3451Ist71S-oEKm3KJF5lxCKMEBgnNt_GVh6txl90EfzrviMgQG_E8UDxTeGnxsWeRr6ql7zYDdSDgQjR20JXhBlOIw)
 
@@ -74,13 +74,15 @@ What is this constant? Let’s google it:
 
 Aha, alright – even if one would view how [crc2 checksum is calculated](https://stackoverflow.com/questions/2587766/how-is-a-crc32-checksum-calculated) one could quickly see the recognizable division flow at **0x1000421C**.
 
+![173x475](https://lh6.googleusercontent.com/0jbri_HRbZ0MINsCZI3qnm7PtLc-uC7PF8Gz65JPzN1wzP7K3156GLWd2iiKaWkrRGTBZOqNhSyQ7Aq32HDbSvFHLs31yUeXXiZbB5ZWRHg82G5QXo7gGF8pEUHdu6-SloI7VLsn)
+
 When dynamically analyzing the file, at location **0x10001A59** one can see that the value **0x3e006b7a** is resolved as **FindResourceA**.
 
 ![695x39](https://lh5.googleusercontent.com/d-033UXzXY_olhuNsZQwwxANLtjxkIwsHFI3lHUPIsd8rC_DsKPHz9D77zn4DT382ZVeWhTxeGmkgHRRXvdBmv4xv846ygDLEBuTI37eDD__cvjcspvCVZh8xehljbOHAURR8GO-gn2LbDya5Q)
 
 ![442x54](https://lh5.googleusercontent.com/a9ZwDbwKSy-aNp_j2FhDaKtUHWx-w8f9T8wOpv80E_3lp50cl4S4ExufxZJKgxrLtpkfLJgr9pEVVyDrWvIWEHRcxNsp-Xze9e-JfG9fQ9TwENVivQwycC-MtYbHrhkBGsGW4UsRhKb6PDwiSQ)
 
-How NetWalker utilizes **PE** Header stomping to break analysis
+## How NetWalker utilizes **PE** Header stomping to break analysis
 
 Let’s examine the following assumption made in Vitaly’s blog:
 
