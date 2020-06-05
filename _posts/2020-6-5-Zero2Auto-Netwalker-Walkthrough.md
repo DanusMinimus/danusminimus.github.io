@@ -30,7 +30,7 @@ The script might be long and scary but do not fear, for all we need to do is exa
 
 ![624x17](https://lh3.googleusercontent.com/vu5keseZVPcwlDAp2N6UqND4pJlgalJ5_TGnS-PfHwiDfd-4G5jh6Z_GriNb8PbS4NV1D2rFFAgF4jridEak-COhgBn7LOwHmdLOJrhYdERKpqECUbVeu9grbIsCSurs5qJBTEJbD0BbtgKyZQ)
 
-The first command “Invoke Expression” will simply run the command wrapped inside “$()”, within this statement we can see that the statement will perform base64 decoding. So to decode the first stage obfuscation, we can simply remove the Invoke expression command and pipe the entire decoded string to a text file using **“ Out-File -FilePath .\Process.txt”** and this would result in the following decode payload. The second stage payload is nothing but the same scary mess, but this time a long bytearray is being decrypted within a loop, it simply **XORs** each byte within that array with 0x47.
+The first command “Invoke Expression” will simply run the command wrapped inside “$()”, within this statement we can see that the statement will perform base64 decoding. So to decode the first stage obfuscation, we can simply remove the Invoke expression command and pipe the entire decoded string to a text file using **“ Out-File -FilePath .\Process.txt”** and this would result in the following decode payload. The second stage payload is nothing but the same scary mess, but this time a long bytearray is being decrypted within a loop, it simply **XORs** each byte within that array with **0x47**.
 
 Again, all I decide to do is to pipe the final product to a text file:
 
@@ -64,7 +64,7 @@ How did Vitaly know this is indeed a **CRC32** hashing algorithm? Well lets star
 
 ![377x60](https://lh3.googleusercontent.com/fEtt-eGNrD7ajzy4Du7Id5OzV4tPsDA9L-QEN7ODaKJdSF7T7BzIdHgUWpNnoiDxAbEvdzbG_rQVugAD0j3FQpnxgUQjB9bDxnb3Ou3_z8ohwPudpTaKq1PilAtLHQ-M-9mUnYwyxTIjItErtw)
 
-As we can see, KANAL recognizes that there is a reference for the CRC32 algorithm within a lot of locations but what exactly did it find there? Let’s jump to 0x1000424F
+As we can see, KANAL recognizes that there is a reference for the CRC32 algorithm within a lot of locations but what exactly did it find there? Let’s jump to **0x1000424F**
 
 ![221x72](https://lh5.googleusercontent.com/5L7t9maEfVrngmUJcEPqsm67HD7jekRO2fr0MXsFa3Y0xFN55yLT8zxBIA6_TgGW84rH8ziugOSF3gSyrEoJhKQHyJGVSHf57aPXADBA7V9TJ92pSP9xubnghXNEK0AmtVtMWoIny3CDBFxsSQ)
 
@@ -72,7 +72,7 @@ What is this constant? Let’s google it:
 
 ![402x290](https://lh4.googleusercontent.com/EEOneQQtEMk57zVoEnTsGgIxi-h4R-J9FisFoOmEZsO425stm_lG3ZgyXyHHOpO9cOOksvnugDRGn5qp85BMPFxDVMz5rGR3E5BjdzHtDv18p1knjFevDxxt8g4vMk8Edp7vomF8oYRUwmCEhQ)
 
-Aha, alright – even if one would view how [crc2 checksum is calculated](https://stackoverflow.com/questions/2587766/how-is-a-crc32-checksum-calculated) one could quickly see the recognizable division flow at 0x1000421C.
+Aha, alright – even if one would view how [crc2 checksum is calculated](https://stackoverflow.com/questions/2587766/how-is-a-crc32-checksum-calculated) one could quickly see the recognizable division flow at **0x1000421C**.
 
 When dynamically analyzing the file, at location **0x10001A59** one can see that the value **0x3e006b7a** is resolved as **FindResourceA**.
 
