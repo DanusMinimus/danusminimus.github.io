@@ -157,11 +157,17 @@ and if we examine the function located at **0x10009210** we can confirm an examp
 ### Decryption process as seen within the debugger:
 
 ![624x47](https://lh5.googleusercontent.com/leh9SK5nN0s1kveeaYzXp_pQYmomFy2m4swmyvvX5_fKdCpGxP_fPjjYASER6nouhJjhEadRmYYrLBml03apfktYeXch2sJLHqbxPT2TS6HZyJqBY1BFmd6-esC9JMzFJKEaq0iK5e1YQB_4kg)
+
 Size(red), key(blue), resource(rest)
+
 ![594x165](https://lh6.googleusercontent.com/S70peBwNPJJsrHbTVO-BFM0YpnqO8yitLFVimbDoO-ESv7MNbp9EvcpokLrN1mP9bzKEKR51Bgz9vLY_o99JGDb2LTd8UMg8isoO6Ta765QZxSM2uVYZ27R4eXQTqR0rL0HEQyTyDzdg-gj_Lg)
+
 After the function decryption is finished:
+
 ![596x165](https://lh4.googleusercontent.com/wH5W0ddtCaHsWmeA99iyYmBvjWkyNdqaUqb21AnKItjnhlckVDKYJELL3x8N5rDXzH-8fYLdt9WjdwhQSe1H1dVW1OIOrmuFMVLyJ6QuQgdb-q1SnQCZQvobAmsbcwH4PfSi4lZXpqHevhbkjA)
+
 Finally, at location **0x10003832** the sample restores the Netwalker header back to **0xDEAD**.
+
 ![329x143](https://lh4.googleusercontent.com/t8uejiBXZO-CzQ2UHp51q-Vnn9VGh5-k67eO-qzUT6Q_QaB4S0xyMK4xUtm2XDRiFrLIE4Rbg7Kpt5v8z255JBO4jraUhGY2Av_SXle8JLsc1rT3ZsKN3ktz1C4tliAxOkcBdLCG_tybPlqAbg)
 
 I wonder if **0xDEAD** is a cross binary constant across all Netwalker samples ;)
