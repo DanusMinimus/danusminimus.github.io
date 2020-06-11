@@ -2,6 +2,8 @@
 layout: post
 title: Zero2Auto – Initial Stagers - From one Email to a Trojan
 ---
+**Preface**
+
 This week we have discussed deobfuscating initial stagers and how to unpack their executable payloads. 
 And what I’ve decided to do, to practice this week lesson is to find actual malware on any.run and unpack its entire initial stage. 
 
