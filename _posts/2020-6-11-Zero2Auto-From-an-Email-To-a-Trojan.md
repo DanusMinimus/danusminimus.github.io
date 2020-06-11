@@ -21,6 +21,7 @@ And what I’ve decided to do, to practice this week lesson is to find actual ma
 5. Knowledge in x64dbg
 6. Basic understanding of stack overflow exploits and how to debug shellcode
 ***
+
 ## <span style="text-decoration:underline;">Choosing a Target:</span>
 
 I decide to go on any.run to find an interesting sample – I have experience in macro deobfuscation so I decide to look for a infected document hosting an exploit which delivers a payload.
