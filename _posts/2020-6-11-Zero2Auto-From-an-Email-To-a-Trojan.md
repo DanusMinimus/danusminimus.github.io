@@ -86,7 +86,7 @@ To be honest, at this point we can stop the analyzes and simply dump these objec
 
 ![624x219](https://lh4.googleusercontent.com/B1TEx9a6aElbEhRL4NqC-nhXdVHSwQruj6L47irZRpK5sowco7dQ535pjlPtID2ZYoGt2idzocAtzOb8dv9s2I9BOzCrlMYAVEGXGx2FooFinPX6EOVOc2Kkq3x6C6pyTBuSmSDln8pb0FNkdA)
 
-I’ve decided to remove the macro deobfuscation from the scope of this blog because it’s pretty straight forward, so I’ll summarize it. This first stage macro contains another macro within itself, it copies this macro inside C:/Programdata/asc.txt and then it runs the newly written macro.
+I’ve decided to remove the macro deobfuscation from the scope of this blog because it’s pretty straight forward, so I’ll summarize it. This first stage macro contains another macro within itself, it copies this macro inside C:/Programdata/asc.txt and then it runs the newly written macro. There is one problem with this method though, this xlsm file is trashed and I can't modify it. It means that every time I want to edit the xlsm, I have to run the malicious macro.
 
 ![624x227](https://lh3.googleusercontent.com/frFsLaMLl3k8fhSgv3NkTzTMphddCbaUSBhsxB2c5YPOrOZfEzAz5mZM-HHnvFStgAYyovPPAJd232Qiez3Upt_QWizhkxzJrd3qslLl42TsSbiK54n2Uh6HC46Ra8TAqWtvV_Fbv8E4rF5KCA)
 
@@ -98,7 +98,7 @@ Jokes aside this new macro is extremely obfuscated to the point where I could no
 
 ![624x212](https://lh3.googleusercontent.com/LABCDvpr_Sy_sql4LIcNU6EuUNQmH9bIRNXz1DNT1Ii-EgY2HLkAd62nzflJB3XKWl_QPuRUbSYJFYJJNcIijiz3R4HEM_eKARLCIWVBDwmnim5_Ejg7A0ICrkyTMXbbPiOMnyT01Q-0kIGREA)
 
-One of the functions had Http function references and direct calls to some variable called myURL. The final function which I renamed to **DownloadFile **contains these references to the myURL Variable. Alas tho, this concluded with more confusing VBS code that I could not debug, for two reasons – being that this xlsm file is completely broken and I cant save it which doesn’t allow me to edit and debug the code properly and this method is also extremely dangerous as I couldn’t edit the malicious macro I kept executing the malware each time I opened the excel file. I had two more tools in my arsenal, one was to extract the two VBS files I’ve located within the excel and this can be done by manually opening the excel or using OLETools and honestly it’s a lot more safer to use OLETools so I set off to do just that.
+One of the functions had Http function references and direct calls to some variable called myURL. The final function which I renamed to **DownloadFile** contains these references to the myURL Variable. Alas tho, this concluded with more confusing VBS code that I could not debug, for two reasons – being that this xlsm file is completely broken and I cant save it which doesn’t allow me to edit and debug the code properly and this method is also extremely dangerous as I couldn’t edit the malicious macro I kept executing the malware each time I opened the excel file. I had two more tools in my arsenal, one was to extract the two VBS files I’ve located within the excel and this can be done by manually opening the excel or using OLETools and honestly it’s a lot more safer to use OLETools so I set off to do just that.
 
 **<span style="text-decoration:underline;">Method 2 – Using OLETools to examine the excel</span>**
 
@@ -116,7 +116,7 @@ Let’s use OLEDump to view the files embedded with in the script:
 
 So the M signifies macro, we know that Module2 contains the Auto_Run macro, and from what I can tell there are 3 interesting files:
 
-**B, C, D **I think the sub numerators to each character represent data within these objects. We know that xx, mm and the equation editor are embedded within this excel and because D3 I’d be assuming that object D is the vulnerable equation editor file. I suspect that since Microsoft mitigated the EQ3 exploit the attacker embedded it inside the excel and one of the macros somehow executes it. Well let’s see:
+**B, C, D** I think the sub numerators to each character represent data within these objects. We know that xx, mm and the equation editor are embedded within this excel and because D3 I’d be assuming that object D is the vulnerable equation editor file. I suspect that since Microsoft mitigated the EQ3 exploit the attacker embedded it inside the excel and one of the macros somehow executes it. Well let’s see:
 
 ![624x456](https://lh4.googleusercontent.com/cv0QvoD0243GOaTiiuimVAISmx5AR_gGK1neUi-k6UETauZ9BnEfjtmGTLZnZmr1GAaMUGGvvgdtmHEjQZLPbFj1cm6bzTduzzePrf73VSuDnsLynB3FJYELGo-jZ-qU6m2OPnz2a6ed8GnYaw)
 
@@ -143,7 +143,7 @@ So, lets summarize our findings:
 1. By examining the excel we know that a macro exists within it that loads another macro, we’ll call them first_stage and second_stage respectively 
 2. We also know that there inside the excel file, there are 3 objects embedded within them:
     1. **xx**
-    2. **mm **
+    2. **mm**
     3. **E3shellcode**
 
 By examining the E3shellcode we can safely assume its meant to exploit the equation editor, which does not exist in my excel version but we can assume that it is true because if we look inside the any.run flow  
@@ -153,7 +153,7 @@ We can see that EQNEDT32.EXE is calling that exact same shellcode, which is supp
 
 ![624x263](https://lh5.googleusercontent.com/f8dqQmFFPZF48k8LsXsSMp9Wlgloqs2pj5gWLYqrO3H9KJP5fE7zjE5qC9V8pgbTCKRyIJs15UT1vvVE5ptrZdIAUx4mLXY5B5DS8hEyaI1BJ-2hcfKZQOtbWlVButjNUXRgF9HM6A2GjY1LcQ)
 
-All mm does is execute **xx **and since we have vba script **xx **in its kinda deobfsucated form, so this time I’m really forced to analyze it. But one question arises? Why is there an exploit embedded within this excel AND a malicious macro that directly invokes **xx.vbs**? The answer for this is simple, since Microsoft mitigated the exploit in newer office versions the exploit will not work and why count on that? The threat actor dealt with that problem by additionally including a macro that would run the malware anyway. 
+All mm does is execute **xx** and since we have vba script **xx **in its kinda deobfsucated form, so this time I’m really forced to analyze it. But one question arises? Why is there an exploit embedded within this excel AND a malicious macro that directly invokes **xx.vbs**? The answer for this is simple, since Microsoft mitigated the exploit in newer office versions the exploit will not work and why count on that? The threat actor dealt with that problem by additionally including a macro that would run the malware anyway. 
 
 **<span style="text-decoration:underline;">Dealing with long, obfuscated, annoying and blinding VBA:</span>**
 
@@ -171,7 +171,7 @@ It’s easy to tell because of the name and because it accepts strings as parame
 
 ![444x515](https://lh3.googleusercontent.com/yYvQxeDRHQsQy-CGaSOlJ8L3yOz_Pu5iHilwSRFRmxSVYI13MtMwhVIAXpakXrG6FTW_jqJOI8xysGFQ9BuBuPjiQ1huyd3rfmC9UI5Nj1mtWgYBspOd59BjYvd04KvHvnp56fbRGqaoui7A2g)
 
-We found the payload location which will be downloaded, then the file would be saved in some location under name putty.exe, then a function called **KTx34hygf37it35hyr **which I renamed to **DownloadFile **downloads the payload to disk, how do I assume this? It’s literally documented within the macro.
+We found the payload location which will be downloaded, then the file would be saved in some location under name putty.exe, then a function called **KTx34hygf37it35hyr** which I renamed to **DownloadFile** downloads the payload to disk, how do I assume this? It’s literally documented within the macro.
 
 ![624x120](https://lh4.googleusercontent.com/vQ_9JTjOGQEs6tNCUH9ZLSNScI0d9XiPVqB0CCYsyYHyNDMxRGPIA152HxCPgkICtWImPJgry1h8JqU83LVqK0RqxrtpTb0ug-TSW9uWkgFEjeK2_d5OdUGKFAjVP_FqPoZ5vvo5xrdacUtO-g)
 
@@ -217,7 +217,7 @@ SHA-256 - B539A1F17ED0C58D80F9088A7AC9985454C4922C0126FFBA86A2B0F5C42D9599
 
 [https://analyze.intezer.com/#/analyses/eeef3469-99ef-440f-8956-ccb288cb801d/sub/8e9324ce-a470-46ee-abd2-d655e657e5da](https://analyze.intezer.com/%23/analyses/eeef3469-99ef-440f-8956-ccb288cb801d/sub/8e9324ce-a470-46ee-abd2-d655e657e5da)
 
-**boasteel.us **-
+**boasteel.us** -
 
 [https://whois.domaintools.com/boasteel.us](https://whois.domaintools.com/boasteel.us)
 
@@ -329,7 +329,7 @@ The file is UPX packed! Alright so I can assume this is the second stage packing
 
 ![621x24](https://lh3.googleusercontent.com/LNzBzS8AEFlhHfYs-PKe9cwlT0Eqye_3PDuy0BfarRj_Nw-9lLEwoYnNhjZNoFokon8OizcY9ePq9s_VkeF-HkjCe5eokrrfIVAmAGlrBBv-gDhY3n_IZbASf1G5R8NeV8JAWroak3SbHuS79A)
 
-Our function calls **ZwCreationSection**, which is usually for me the first indicator of process hollowing, it does so for the new process we spawned. Then on the function calls **ZwMapViewOfSection **on new section, next the malware calls **ZwMapViewOfSection **on itself, which means its going to map the **ImageBase.**
+Our function calls **ZwCreationSection**, which is usually for me the first indicator of process hollowing, it does so for the new process we spawned. Then on the function calls **ZwMapViewOfSection** on new section, next the malware calls **ZwMapViewOfSection** on itself, which means its going to map the **ImageBase.**
 
 ![223x115](https://lh4.googleusercontent.com/h_apKV1weiHIe0K9P3PUrLmvgaIqzIQD0r7gP1G3RsXcEVYZtPd9W7jbLsbhsooMJvDs7-9aNGmX9F3-VpVtT1InMgaISwfutAp8D-EhvkgDbdHopXYNswRaTKrfcLcoE0ZsG0cwXeAU6NupbQ) 
 
