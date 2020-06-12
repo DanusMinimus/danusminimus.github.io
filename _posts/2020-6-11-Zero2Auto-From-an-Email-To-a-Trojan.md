@@ -112,7 +112,7 @@ Thankfully OLEVba did a lot of the work for us! By detecting the location of the
 
 Let’s use OLEDump to view the files embedded with in the script:
 
-![624x377](https://lh4.googleusercontent.com/pRJ_tQbDyXHfo9AHMvu6rw6f6KKd7-KcCHoXtFvLXw_oorglwFm-60MMo0KLaEyJ--9LAihXsQPxkXS0Ass_ae_uniyB9GRCOn7Mv4H2Ci_WdQHhkKubkW1A9RhaHV6RkElU2BsrLUyrh1ma8g
+![624x377](https://lh4.googleusercontent.com/pRJ_tQbDyXHfo9AHMvu6rw6f6KKd7-KcCHoXtFvLXw_oorglwFm-60MMo0KLaEyJ--9LAihXsQPxkXS0Ass_ae_uniyB9GRCOn7Mv4H2Ci_WdQHhkKubkW1A9RhaHV6RkElU2BsrLUyrh1ma8g)
 
 So the M signifies macro, we know that Module2 contains the Auto_Run macro, and from what I can tell there are 3 interesting files:
 
