@@ -45,53 +45,54 @@ Before we even think about using Intezers tool we must reverse Quasar. What are 
 
 We load up the downloaded Quasar source into Visual Studio 2019 Community which can be downloaded for free [here](https://visualstudio.microsoft.com/vs/community/) and we are greeted with this:
 
-![306x181](https://0x00sec.s3.amazonaws.com/original/2X/3/31543236fe2db805211d3955fa32062265481a64.png)
+![306x181](https://lh4.googleusercontent.com/bjp6tSwJwPiOsWYY7bzO0XvOSGMYeLh8iysNeCkIJW910CiElu5OuIyI84wA5TfsecCRAbjjfEuvQ8DitTVth_2ht7TH-raUOmyI_87kvhntZvsvWqJMv0NfcvFRJ4bGmL52-auAF23Q7p489w)
 
 We are interested in the client code, how ever just for reference and as we will be dealing with the others – Common contains various utilities and Server contains the code for the Server application. All C# programs start with **Program.cs** as far as I managed to figure out so we will start there as well, let&#39;s open **Quasar.Client** and find **Program.CS**.
 
-![624x431](https://0x00sec.s3.amazonaws.com/original/2X/f/f8ee801e84ee698ef4cabbccaa624cc47c3de82b.png)
+![624x431](https://lh4.googleusercontent.com/fB6kQj3U5RffBJoA1kJrZgbIBD9kztd_KtB51rzNZAkcrfBmAXfHuaSXPag4_MtdEjyZIwD-0_snoReesrML9MdvOuDXis1U8YPtfRxT9dftOkioOWMCFnO1E2fHhpgDWIf7ZsbpXpmICn8GRQ)
 
 Ah, I wish this was C ☹. Anyway, we can see a few things of interest in this little statement if we right click **QuasarClient** and then click on go to implementation we will drop on where most of the juice happens in this code.
 
-![624x163](https://0x00sec.s3.amazonaws.com/original/2X/9/90af3044a3e23a57d466bc157388d9217fabc459.png)
+![624x163](https://lh3.googleusercontent.com/_Gjm24tlu7jJQN3AqEJUiM7Y5cm8FDzTiENF217HNg9qshIoyrUOGxjGx3Ovj_B2nNlfiPRzF7YtrXA_f-Xb92bJ29DwQ6VFRlENyPBOj1Oh0Ck2wecTKj7IphYagEOtXnbCrEEONfsy4xILdQ)
 
 We&#39;ll start by explaining the **QuasarClient** class which inherits from the **Client** Class. The job of this class is to manage all the events that that accrue within the client, It has a special function to handle the registration of the bot ( **OnClientState** ), it has a function to handle message reading events ( **OnClientRead** ) and failing events ( **OnClientFail** ).
 
-![624x513](https://0x00sec.s3.amazonaws.com/original/2X/f/f3746ac535c562e80818b056fdc45a9195fcd627.png)
+![624x513](https://lh6.googleusercontent.com/TpyG68yezt5zEX26kicbLaeIF1zNudan5r5D5bo4GzgyBr8JNVex92IfHPGy7IMnbJfTWLJVGaxQ5VyGQ7cOy7NgYwaHWJ7czGsRcpmUAgwIrfZFy5QEwaXfiMCk4WQa1AyIaJh4tIJ7Wqp9qg)
 
 The **OnClientState** function attempts to send an identification packet to the server. To explore how this message is created we can access the constructor of the **ClientIdentification** Class
 
-![399x626](https://0x00sec.s3.amazonaws.com/original/2X/b/bd4776f0e96f7ce2a9484f33bcdeb3067362e22f.png)
+![399x626](https://lh4.googleusercontent.com/1h1QlQZp0279hEllqI4IyRc45Tqmy5McUa_Fh2VPLhXG-uX3obCk95sFcE4uLMxFOpa3k5qSpzHLHtZxYt9TIZ_TAm5HqZbu6tEb0faGIhXrNLhCM2F5Ud6LmQPQ1nm8RqkSrsTZ6ZMpiAyBSA)
 
 Everything here seems rather normal except for these Proto declarations.
 
 Let&#39;s get back to the **Program**. **cs** code block and look at **ConnectClient.Connect**
 
-![511x347](https://0x00sec.s3.amazonaws.com/original/2X/c/cc0a646e0e710705a98ecc391d29ddb0394668e4.png)
+![511x347](https://lh6.googleusercontent.com/cPAMPKZOE6VZsK6MHZYtwpSZoWu_gyPqjZuWtwW3kjDUJ1gW_8EMekdlLFW27yyr7IIeNSq94GIZh_jEGAt9CgFV8pcW6Nbjxvqq8m9fQd9gj_k1lm74vNyh9GxxyQKf5Gzo74Z1ThIrH4Zibw)
 
 Which leads us back to the base **Client** class
 
-![624x303](https://0x00sec.s3.amazonaws.com/original/2X/d/df454af21f34919ff06c4a3bcacfa72396126ef0.png)
+![624x303](https://lh6.googleusercontent.com/3JXPrGpkRyuY4pU4TgTrQWyCrmKlzRviDvt0JEpddCpH5vAQI8nqvaE-GwmZWdi8WTi22_kj7_IR78-zAiSAFs93p0EcfyNP8M5ZQTL5UenodvWUwkQKWtegzrI2FkkZ82nxgJcYPRnGBRr3Mw)
 
 Alright! Seems like this the answer to our first goal! It seems that to initiate a connection the client first establishes an SSL Stream, and then it looks like some sort of validation is happening using **ValidateServerCertificate** callback and **AuthnticateAsClient**. Let&#39;s leave these for now as we are just mapping how the code works. Now what happens next? If we access **OnClientState** through the **Client** base class that would lead us to the event handler itself, to find the actual function that triggers on this even we must go to **QuasarClient.cs** and access the reimplementation of the function through there (Gosh I hate OOP). As we saw before, The **OnClientState** function triggers the **client.Send** function
 
-![580x489](https://0x00sec.s3.amazonaws.com/original/2X/e/ee3f3db47c72def354da276a4684e38c43dd3639.png)
+
+![580x489](https://lh5.googleusercontent.com/v9az9crWWvnm_P_Lo14DC9yIHL-jKrFoONuNeFzDImBhW4CN1ItPz1LjJwKz-H_vqtv_jSD-wNYWOuGAb_s2k3PSxmrOrejt5uOobcG1DhDpotXdBk1eg2jc5rrgxNsbtK1claKG4_kzL4qYIg)
 
 I&#39;ll be honest I don&#39;t know C# but I&#39;m working with my instincts here (much like in assembly haha) and the only thing of value that I see here is **ProcessSendBuffers** so let&#39;s access that and see if it would yield us any results.
 
-![445x526](https://0x00sec.s3.amazonaws.com/original/2X/4/4b7b7e21f93a40ef130b0c20fbbade4043aaf617.png)
+![445x526](https://lh4.googleusercontent.com/W4qorHICKbAVM7TOWoqPS0pT9kLJ6GZ5iv2bHrbvLL8_AmVBWfBNEnAGNhxGppHwowLMm7i4BDftmRAUShCOrUqM2tXB3gBz7DxYyy1UMh7VFbrRxbhvGuNElU1gRUm8LLQEY4jQghTMPbOH4w)
 
 Again, using the same strategy as before, lets access **SafeSendMessage** and see where it takes us.
 
-![624x412](https://0x00sec.s3.amazonaws.com/original/2X/6/68fb03fbb33a059abb4ffe0618745178fb56056c.png)
+![624x412](https://lh5.googleusercontent.com/B7oWhv_HaDMjR-whqmKqZwDsYlh3H21pvpwXVfT3O81iBhDTg2FiSD50wNE0HcDcq3yd-1UWwBVF136192xl-kw_y3Yr2-vog-3jJHnaYr9efBbA6ldPsFnpah2XRjxZqdVp00QzG7kdkSdl-g)
 
 Alright, now we don&#39;t want to access **OnClientWrite** as I fear it won&#39;t take us where we want but instead lets access **WriteMessage** which is located within the class called **PayloadWriter**.
 
-![624x349](https://0x00sec.s3.amazonaws.com/original/2X/d/dd68734c72d072e02d327ba06636d525627f2604.png)
+![624x349](https://lh6.googleusercontent.com/uB5JRcYrIjuCSWj6eWMVvyNb7YEYuVgYEKg9MIAwujvKdPUwj0RUVnl19mHrftOACvib2L35hssJI02MBnRh2ByXNBl8AxPzBdEdYOvTm4FfbRejhgID7lQxREtAAZzY1vy5C98z_cTLwW9a8w)
 
 Jackpot. This function writes a serialized message(I&#39;ll explain what serialization is, don&#39;t worry) to the SSL stream! So, let&#39;s make a small diagram detailing our findings:
 
-![209x602](https://0x00sec.s3.amazonaws.com/original/2X/d/dfa60054b38657c1a6822fa07136c9985507f6d7.png)
+![209x602](https://lh6.googleusercontent.com/usEtJ0jMfqEgKr5zIzZvuhh-ov8wrompiZyHWPuG-WmB2HKYjnD4QTYdLY8qbU06s2d3UsdZfLAuKVIH5qj9RvgbRVmQrmE69rEDV4MRvgq-kOd4n6oC1-_DOU1WR-Hz6_ZFmf44XVKeAYcCbg)
 
 Alright, this is obviously very shallow and incomplete and as we progress with our dynamic analysis, we could expand on this diagram so let&#39;s compile this Quasar Project on Release settings in Visual Studio and move this entire thing to a virtual machine and start playing around with it.
 
@@ -101,48 +102,48 @@ Alright, this is obviously very shallow and incomplete and as we progress with o
 
 After you compile Quasar and moved it to an isolated environment you can start the Quasar.
 
-![624x422](https://0x00sec.s3.amazonaws.com/original/2X/8/824d52d1825301954652ab6d63961d7052469e67.png)
+![624x422](https://lh4.googleusercontent.com/0kEoD51R9Gt51LT04Zj98hLYb5IdgOgJoF2zHwqIMeon42LaEVLxOlzooHG6GV4eoKiaYUfSS5hdMPG4fkPIpuhCydICwCz4N9xGsy8jc2hItCqAYzgPQKXZhWqEKXB1a_WBbBPFXE-v0it0OA)
 
 This screen should pop up, and this is actually very important. This pop message is a builder for the **X509** Certificate which is responsible for creating a valid SSL stream between the client and the server. Quasar will generate a **X509** cert and bind this cert to all generated clients. You can learn more about SSL here: [https://www.youtube.com/watch?v=iQsKdtjwtYI](https://www.youtube.com/watch?v=iQsKdtjwtYI)
 
 After you generate a certificate is time to build a sample, after generating the certification click on the **Builder** and you should be promoted with the builder menu, the most important part is this one:
 
-![624x522](https://0x00sec.s3.amazonaws.com/original/2X/4/4cc4db33aab3174c47dfd566c0f736feb56193db.png)
+![624x522](https://lh3.googleusercontent.com/MasV7fFhE_dKFQk8fYZiaPjQhP0VlT94ajpC5wnuKM2oBG5KmecmHdIaQ9nD0P5ux5VpH0lB1j1JrFzjxoXPHa9leCMFhUEeZ7yovqdnyqEcO_dWu8dbTkhAskFFehH-VQPP1_5AQsNLNOlluw)
 
 I have 2 IPs here; one is the loop back address and the other is the local IP of this Virtual Machine. I would suggest binding the client to the IP of the current virtual machine as it would be possible to emulate connections to the server from the current virtual machine and outside through the host (since the host is also a member within the VMWare local network). You can use any port you like but I&#39;ve used port **27015** because Minecraft. After you built the client you should see it within the current directory of the installed Quasar client. Let&#39;s take it out and open it in **dnspy** which is a **.NET decompiler**
 
-![624x242](https://0x00sec.s3.amazonaws.com/original/2X/3/369be6576082d5cb7d9fed32e0d5efc0c1755947.png) 
+![624x242](https://lh4.googleusercontent.com/F_6zPAYSLoLsLYe0hfaugLU3Ji3uff_2jKEObK_sq6oFQxCshsydyLtckNgo3hrdvTjPbf4HCztg7JHBO4y_zu74tW2MFYi9Croqy_tE23NAaDoKMXVp3EXA76Zk11BUuMK3m6OfPDqPS3hExg)
 
 But we are met with this garbage, but do not worry! We can use **de4dot** which a .NET binary de-obfuscator so let&#39;s run it and we should be met with a clean Quasar client:
 
-![624x292](https://0x00sec.s3.amazonaws.com/original/2X/3/3bcd80d3667589874ab183557eac4b63ce9948cb.png)
+![624x292](https://lh5.googleusercontent.com/qcAMJ53v7_BvtOBI0wD_VjJ-BkNB0UpQKGF1CWguPIRMvF6mYEBGdB8CeKzNpn_nWj6Xc38bsxKdud0Euo-NJGYJ6g6JRyNpQx5iF21DMJYvjM13ug3XCUKZz45ivxpnUun22K9DA8oc44QfMw)
 
 So what you can see here, is although our Quasar client is clean the symbols are gone but don&#39;t worry as we hold the full source so let&#39;s start debugging. we just want to see if our diagram is correct so lets click start and place a break point on the entry point (I highly suggest renaming these functions and class names according to the source but since I&#39;ve debugged this so many times I already know this know block like my right hand). PLEASE MAKE SURE QUASAR SERVER IS RUNNING. We&#39;ll encounter our first problem with in **Class0.smethod\_3()** which is the second Initialization method:
 
-![340x121](https://0x00sec.s3.amazonaws.com/original/2X/4/4e44f309ccdf66459329ebbbbab98c9a9ce05a0d.png)
+![340x121](https://lh5.googleusercontent.com/J2hbthquImhedf6f9Esiwn7WGlwyFFvCEf4UVN31oRGRJkgDh6VrJ0I97WwJ_61jEDhMgUf8b7htSu1LunL1eTmDnOw7AjAXqLoHVcZdDubHaJfVi-4ONj3s9XlMLfshYY4JjxSL5qQQQxf3vg)
 
 It will not return **True** , thus causing the client not to execute and exit. but why?! Let&#39;s look inside our source code:
 
-![624x131](https://0x00sec.s3.amazonaws.com/original/2X/2/2cb07cfb810952510714db8364ba86f89cfcbb91.png)
+![624x131](https://lh6.googleusercontent.com/fOChdOHZEgf6QhZKP_XjC6gzE0cu2UXYnv729EbvEpvFreURpcapXC-dSxsboj5gPFM-mJ98BzTcX3XXm_UbaHJVTYKIkGKkVuJsIbwppwdCKaeLu0oHF5frGd227TEsL_DJRYLCxmWSDL8EPg)
 
 This if statement which is marked in red, install and connects our client to the server by returning **true** after initializing but it seems it will not execute as the **current path** the client is running from is not equal to the **install path**. To understand what I mean let&#39;s go back to the builder:
 
-![624x516](https://0x00sec.s3.amazonaws.com/original/2X/3/3df6279a4ccb5445d3735c1e307d373b1a87b77d.png)
+![624x516](https://lh4.googleusercontent.com/2btsAECRMbak4HRiYWpcOP-wrOZvj_ngXsLgR2juoPYxWXs6lpk9RCzW1PrufnzjbbJVNJ7OE7Bt3KJY8gMvTyYwIOZ_qypQxv1AsNEJJi_H_JCG98WJCRBWciJa90KY-1mQ8MzUX1NulKGESw)
 
 So, this code block checks if the client is currently being run from inside **Appdata\Romaing** (In this specific case) if its not there it would execute the following code:
 
-![478x125](https://0x00sec.s3.amazonaws.com/original/2X/e/e378aa9e3c20101500527f1c022a9d64657b0990.png)
+![478x125](https://lh3.googleusercontent.com/0k8p8GxT_3uAU-1GL6ZrSOADNQfeSXXUanPVskqvUXK1A_9uLFfLCrIk89UusFc9Iy_U0Jg2QD6TkIxaM3Kg0vbCcNTIjf4nf9_DMcan0vp84ZqVCSSIyCsw2W4t7K8b8YUaScEqSS0hKm8VgA)
 
 This code handles two problems, one is that the client has detected that another instance of Quasar is running because it detected the same **mutex** that was used within the current client and the other is to Install the client into the computer but adding persistence, killing and deleting the current file and process and relaunching it after it has been moved to our designated install folder. You can enter the **Install** method and read for yourself as the code is very documented. This is very cool cause it gives a researcher a real insight in how malware might be developed. With this knowledge in mind let&#39;s do two things:
 
 1. Update our diagram
 2. Move our client to the designated install directory and start it from there
 
-![624x638](https://0x00sec.s3.amazonaws.com/original/2X/1/1bcca32e135cb773a613e7a9b1ec617b02857348.png)
+![624x638](https://lh6.googleusercontent.com/XbSsZLySHdkaMwq3rQXJwSHwtkXmhr7ZyrYRkFTEes7Gt_5bO0rbtkyOX9oKsEk2JzJXBerOdnm8xGm1G5WKXa854aI-aM6oeP-s-BDApbqNQoWhHbFUU6oywidFtW7PZOJYNYzc3mkALgmB6Q)
 
 Let&#39;s debug our client from our preferred install directory and see what happens, remember to make sure the quasar server is running in addition I would like to fire up Wireshark to monitor the network(This are my own settings, and the IP address and Port will be different on your machine):
 
-![621x23](https://0x00sec.s3.amazonaws.com/original/2X/0/07b9c6e11f2fe95b71d87b35811df000a346f6d3.png)
+![624x46](https://lh6.googleusercontent.com/3winTBHVcbDNJV1ZO1mngbTE5YEUDOm7lvpN9VzL8ZZUxiagnPmA3R45pNY1WfBLlcsm6li89m5kZSWbY22fVaPHvzQeWr1iamEcWBspVZKJnrfQ5GlY8pV8cxUwLjFaJFmojv6HG1KiKNGeWQ)
 
 I&#39;ll restart the client from the **Appdata\Roaming** directory and jump straight into the **Client.Connect** function:
 
