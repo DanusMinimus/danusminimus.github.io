@@ -316,29 +316,28 @@ Next please follow the installation guide here [https://intezer.github.io/MoP/do
 
 If you are using sublime text editor, you can click on **Project-\&gt;Add Folder to project-\&gt;navigate to the downloaded tool** and this should open a comfortable view of the project.
 
-![624x472](https://0x00sec.s3.amazonaws.com/optimized/2X/b/b36670c4cac3d583133cac6feb922403ab16ba29_2_936x708.png)
+![624x472](https://lh5.googleusercontent.com/HLjpp-MGOh3cnulI_5aDxiKTC0DRdncKMIRKc7lxzwjUGV796CxHil4ojCdc9OeT4gkLP0HcVKBfeAad0DJanNdvAMi7hWwtixfxcHioWerB_hCKrysm6sB2DuJEaIAatej57cqj)
 
 Please open **orchestrator.py** and remove the first line &quot;#!/usr/bin/env python3.6&quot; as it causes the tool not to run on any version other than python 3.6. so, this is our main script for this tool. Scroll to line 46, as you can see this a command parser and in our case we&#39;ll be using the option described in line 53 – **targets-config** which allows the tool to connect to multiple clients, so please open **targets.yaml** and remove the hashes with in it.
 
-![486x142](https://0x00sec.s3.amazonaws.com/original/2X/6/6802d4fa67c6fb6441f13d871da94cba8a22becd.png)
+![486x142](https://lh5.googleusercontent.com/5aIS8iwwlmDJMQvy6MxRUR7qzVplw76ZZaDpB4ORWWYbG9nS6cEQflM1ZibGP0IgL8_1xZGWCw2FU-3Xf7ZthF3LU6g2rsjIPs07MWoEVzO8kN2r5f_upn6VZzhaPhcEY8sgy9YY)
 
 I&#39;ve already set it up to run with my instance of quasar but you can keep yours as is for now as we haven&#39;t set up our plugin yet. This tool sets up multiple targets, by specifying the IP, Port and the plugin for the target.
 
 If we go back to the main script:
 
-![624x182](https://0x00sec.s3.amazonaws.com/original/2X/9/9ec95dac31cd56bcf4a657d135debd2a91d5fe4e.png)
+![624x182](https://lh5.googleusercontent.com/Gw9nEZ5s4uE5ubDIvecsg_FlG0JoXLGz9xU3g0xu0OH2sYUVoFcgsIIiCDUjL2CN2HekRWqZGDzoO43v-0Qsv9Cbyg0gmf3KHtdcs50KHruQYJ_d0yQA87d9qXBdFRbKBkQc3VC-)
 
 What happens is at line 54, the **targets.yaml** file is parsed, and the contents of it are extracted. Then function connect\_targets() is called:
 
-![612x78](https://0x00sec.s3.amazonaws.com/original/2X/9/9bd4775dc44fea2df5db1536e29822300c3de4b6.png)
-
+![612x78](https://lh5.googleusercontent.com/VHDs3ZblIYqYDBZY-CYC6iClMwYcQEetbuC8XGkm6wX80FPUF0b8qlxG56BbVTNnxgFRm_7Ja-mq1hxCVHSovLZypge5NO5C-ciuBJATxP_3lKoijElqBsTRAFwu_lkmz5azx35D)
 Which for each target found in the targets.yaml file executes the connect() function:
 
-![624x215](https://0x00sec.s3.amazonaws.com/original/2X/b/b47aa0da02e84438fcb1ee458e9d07eee02ee2d5.png)
+![624x215](https://lh4.googleusercontent.com/z6EtZ28XZzB0IFxm4z107AdcdqghboIZCR1eIL7aeXuFq1IFkkvQfUJPDdqbFnxlrBizyzBNwyzOsCh-38bByFhERJyk78yqSkHbxvYJxrpGBX8vCj3pyxmcql_PDmUKBno9Z48H)
 
 The connect function is found at line 22, it starts a thread with a callback function called \_connect(), it passes the ip, port and the plugin into this function. \_connect is called at line 27. First it imports a plugin from the plugin folder, then at line 29 it uses the plugin constructor to connect to the rat and then uses the plugins connect, register and loop functions. All the plugins that are created extend all the properties from the puppet\_rat.py class. So, let&#39;s open it up:
 
-![624x524](https://0x00sec.s3.amazonaws.com/original/2X/a/aa5b5ab1484183c45c166be9d5f7809205e9b76b.png)
+![624x524](https://lh5.googleusercontent.com/lYeP5D3Q5doUnqBr5vQBrBN9VZ04dQnU1EpNi7JX5OvXuXPsRbvDCVBrcgfnuemHezfFRbDnqB5YsnQalRovAshgZZilLdVG9RA9S_hhQlUTA0pLUx4JSVpXSzcA_SF7naAgY-L4)
 
 At line 16, we can see the constructor for this class which as we saw before at the main script is triggered in line 29. Here at line 16 the constructor sets up various client attributes. The ip, port, the fake process id, the logger which is used to log all events and the conn variable which is used to represent a socket. The most important functions are:
 
@@ -352,23 +351,22 @@ It&#39;s clear what we must bring from our test script. First lets start with th
 
 Now I&#39;m going to review my plugin code line by line:
 
-![624x307](https://0x00sec.s3.amazonaws.com/original/2X/8/8252dd4099e83ecec06b769be8a3c7c95a5af7d4.png)
+![624x307](https://lh5.googleusercontent.com/VkCaj_Sxyk6edMYcTOesc4t7WB4XdQnMz8B58tTlt-r94iqwQuf-zW8g7eAGzg7kilRpaMdjPtv6kZJztnxVYkRq1yDUyZ78yQLcZhDGjJr2gsdC0GTwL9h9Cs_RH6_d6z0O2thv)
 
 First let&#39;s discuss the constructor which as you can see extends the PuppetRat class, thus inheriting all its properties. I&#39;ve added the message members so they can be edited on the fly. The only messages that a user has to set by himself are the **Tag**, **EncryptionKey** and the **Signature** as these interchange between client to client. In addition, I&#39;ve added a protobuf message member called message which can be seen in line 70. It creates an uninitialized Quasar message.
 
-![507x494](https://0x00sec.s3.amazonaws.com/original/2X/0/056eb1594ecca0467ec3254902d3d503bb2c9395.png)
+![507x494](https://lh4.googleusercontent.com/IAgQVxiE89lclTZkUMXUymTK51K2W-b4key_3qQvGt_FNSepLvsukoM5UdKZvpFt2ivsL6iGIYZzzTGYVtlDQ6o6k2SpZ7IitbYXcNTcoZxKckshvmjjAxLsCRxYykBLG_nDKphA)
 
 I&#39;ve added 4 more custom functions that would allow the researcher to change the tag, id, key, and signature as he would seem fit and function that would create and set a protobuf message. The function \_\_del\_\_ is a standard python function which executes when the object gets destroyed and in this case it would just close the socket connection created for Quasar.
 
-![624x199](https://0x00sec.s3.amazonaws.com/original/2X/a/a56b61f794880bd4b5639896320b2e705b163ae7.png)
+![624x199](https://lh5.googleusercontent.com/vDRsXZwKZQkhitTCCRU8V4KKdTBoykvgSHZ1w63vMd6uZGotxaioy116NevjaT3voXl0ngXFua5DE4eZA5ZLtOL6inU_9f8lv9bZD1XbWPpeGAV7vopN_IF6taTMLBgpoUIulbkj)
 
 The re implementation of the connect function which is very similar to the one in the test script. Before we review it, please download the utils.py file from my repo and place it inside the **stage props** folder as I&#39;ve added several functions to it. First in line 112 I create a tcp socket, then I bind that socket to a SSL socket and context. The **create\_ssl\_sock** is a custom functions ive added to the **utils** script. Much like in our test script all it does is create an SSL socket and binds a context to it so we can verify the quasar certificate. Then, a connect is started to the Quasar server and a handshake is attempted. If all goes well, the logger should display a proper message.
 
-![465x165](https://0x00sec.s3.amazonaws.com/original/2X/8/880465896765f9264f5066cfa3caa8a971cdce2c.png)
-
+![465x165](https://lh4.googleusercontent.com/gdQG89g0imrc-Sodt6_fILEmAOntchyznHeqbRFP7EhcmncLhzxCL37IN2hELt7a5kVAFe7X5sLjm45IzSp8N0f5Ax2kIdf8y5uhT71RBB5VA_PfCa8uTViIVS_o7bYVDTppift_)
 Then we move on to the loop function, which is very primitive at the moment, all it does is receive messages from the server and displays them.
 
-![624x165](https://0x00sec.s3.amazonaws.com/original/2X/f/fab464d951296ea63112cf98514f31e78b65be31.png)
+![624x165](https://lh4.googleusercontent.com/MJbVe-VLLh9Yy3pn_jIqS5UJ7u-uC8UezHmhj5wq27Uc0_iLIavkqdnY5Z2fqkmX-V5gRehB3DCsM2CsMB3QjfT_nQFwY0-UDKvmUk1SL5ap2ZoQFcws9yvgMb_BX4sP9Ey_j--e)
 
 We move on to the register function, which is the final one, all it does is mimic exactly what would test script does. It constructs a Quasar message and sends it to the server. I wouldn&#39;t go into length about this as we discussed this already. Now finally, let&#39;s see how this run!
 
@@ -376,12 +374,13 @@ Start your virtual machine and launch the Quasar server, then start a shell with
 
 &quot; **py orchestrator.py –targets-config targets.yaml&quot;**
 
-![624x66](https://0x00sec.s3.amazonaws.com/original/2X/4/493789c9752b11008147fca9e8ab9bac432d7599.png)
+![624x66](https://lh5.googleusercontent.com/TpZn_CJZLxwW3dP60PDvGLylzB1ebeL1OFT-ok3Z-nfxXtBsg1toz0P-SXPFSDFwUg05xbfztPj9KDRDCui6tjO6PJBfYxvbq-Taz2unngWtHfdU4Uo--5sthYwoLL1YlDj9Zji_)
 
 **YES!** Alright let&#39;s see what happens if we try to execute functions from the server itself by forcing the client to open a message box:
 
-![624x253](https://0x00sec.s3.amazonaws.com/original/2X/5/5e4ca85383cc960a40269143307c1ba70111c80d.png)
-![624x127](https://0x00sec.s3.amazonaws.com/original/2X/f/f9ede6563b0519c96d7946a6fccff59e487ca511.png)
+![624x253](https://lh3.googleusercontent.com/ppOOgDC0bzazl8UVmjRHuq_nkaL9fPUcJW6HfG9NS-gVcXPAaS5C5Nv6zNMGsUIxRAtkaauLaGH55BnrPkAeiS8lR0ys7xhbGi4e6BWD6Ly5b5Qt2O6BL6wphLYAtutTU1euPHOd)
+
+![624x127](https://lh5.googleusercontent.com/y7RBLFrjuatuy4a4RweHHrPUwtUJB5SHjfTnnVwkvVGGBKoqmKhFn--IhH9JZ3gv_3bdGQHYDux04EVo_Oe8272iHO-g3zDZ9L9VjgYumKtR7dHdBcJeUS7buYwPgkWaJ4A-uzSK)
 
 Amazing! As you can see, we received a new message which needs to be deserialized. This would require some more effort into reversing more messages but from our gained knowledge it shouldn&#39;t be too hard 😊
 
