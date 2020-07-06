@@ -143,41 +143,41 @@ This code handles two problems, one is that the client has detected that another
 
 Let&#39;s debug our client from our preferred install directory and see what happens, remember to make sure the quasar server is running in addition I would like to fire up Wireshark to monitor the network(This are my own settings, and the IP address and Port will be different on your machine):
 
-![624x46](https://lh6.googleusercontent.com/3winTBHVcbDNJV1ZO1mngbTE5YEUDOm7lvpN9VzL8ZZUxiagnPmA3R45pNY1WfBLlcsm6li89m5kZSWbY22fVaPHvzQeWr1iamEcWBspVZKJnrfQ5GlY8pV8cxUwLjFaJFmojv6HG1KiKNGeWQ)
+![621x23](https://lh4.googleusercontent.com/6cayQ43j7YiGeowBUT2GzU71Rbb7ltbHhLrYjUR-0By2OolZ-Vf0kPs1aQ7Ylm_1DcEdq7UttVXEC1scH2KuZrdvwI-HqXTWS7DMsfJdob3ecMGdMN9y542Tbet7AYEDcySfzaUSPo5W-JaT_Q)
 
 I&#39;ll restart the client from the **Appdata\Roaming** directory and jump straight into the **Client.Connect** function:
 
-![624x46](https://0x00sec.s3.amazonaws.com/original/2X/1/1c0307c9524697e07401bf2fceb86e45bb6045d6.png)
+![624x46](https://lh6.googleusercontent.com/3winTBHVcbDNJV1ZO1mngbTE5YEUDOm7lvpN9VzL8ZZUxiagnPmA3R45pNY1WfBLlcsm6li89m5kZSWbY22fVaPHvzQeWr1iamEcWBspVZKJnrfQ5GlY8pV8cxUwLjFaJFmojv6HG1KiKNGeWQ) 
 
 This time we hit exactly where we want **(Pro tip, you can right click dnspy objects and change their names but hitting Edit method, after hitting enter to confirm the change it would send you inside the edited function – to go back, press backspace).**
 
-![624x97](https://0x00sec.s3.amazonaws.com/original/2X/9/94dad03cfe4fe0dae89ef35c2a50881b631b86f3.png)
+![624x97](https://lh5.googleusercontent.com/ZQ70JmLOGLxUcQR0BY_6DTwX5SA9iG1VZCWdGMu34uNfj9LF6HOBwlIIaA8roSolNAwXtcAg61VY7K1ywQpyZDLObRSqY2Yowyo6_Vw77l-iE6hXzGfdWKaaTuzNhvXfhuQ760juSKu86HCl8Q)
 
 We have three places that are of value here, first is the **RemoteCertificationValidationCallBack** which would validate the certification received from the server, the stream reading function and **OnClientState** function that as stated before should send us to the **QuasarClient** registration handler.
 
-![624x297](https://0x00sec.s3.amazonaws.com/original/2X/5/58cd62f79aaa9517d08ae19fff74e194f9605f0f.png)
+![624x297](https://lh3.googleusercontent.com/g9AW0XsQ_5VG4CgQqfkYnSIB4X7OhIdVSl3urJ7HZFrFitor668IDoUojJS6UjC3kA_cpMmDylPQWvSA9scgCW_yzI-z-cF15_B-sl2SNEEwA4ztmqz_wByiEdmz5TeFr4qhVpfWQKLL3q-iqw)
 
 So **socket.Connect** function should connect me to the server successfully and initiate the first TCP handshake :
 
-![624x29](https://0x00sec.s3.amazonaws.com/original/2X/6/67d8ece9ce0212ed83d0c080f332a46728accf11.png)
+![624x29](https://lh4.googleusercontent.com/_nVXKrt_soEgiZYFF57rfCSRw3CY1tVWR7mK3vJ30PvWp7QfTeqrRHTkoQAyX6LCQg2afzDNctv_Stl4nsq9LdJke_Gf8L84dHcSPS4NDltbEyDYgsDOcmQbcBoQRkdy9TGxhGqTjAt3hozvIQ)
 
-![](RackMultipart20200427-4-nb5son_html_9f1831d338e48753.png)Next I want to examine what happens when we execute line **287**.
+![624x297](RackMultipart20200427-4-nb5son_html_9f1831d338e48753.png)Next I want to examine what happens when we execute line **287**.
 
-![624x87](https://0x00sec.s3.amazonaws.com/original/2X/0/0c651524a48408ec3d641e646b79c1435643fbb4.png)
+![624x87](https://lh6.googleusercontent.com/2xVH4HvN2wIu3viO9P8LD6uUo-Pt6XqD0BI5JXTouqt7PGjQsbUvV_x0awza97s_2qRuMmgZlTMMqWPlUWrlV0kGRv9h2gPxGNQPa1CI7uGomptJj-_s9j9N76X5PpmbxCjGa2baf7xJ4viNrg)
 
 This is an SSL handshake, but what happened is that the server passed its **X509** cert to the client and the client approved this certification, and this is happening inside **RemoteCertificationValidationCallBack**. Let&#39;s examine how it looks inside the source code
 
-![624x101](https://0x00sec.s3.amazonaws.com/original/2X/5/5bf69ac95a8f87657ef5d26712308003482ea312.png)
+![624x101](https://lh5.googleusercontent.com/HUQZJLpF13m5kgFCNo7iGzDusRpedbBTwm35dlRapd_hojLvbbyyp_-e79kcuXp8NaTpZunHbL4dmXh616jFJgAA3xx_iOQMv05F6e6CDmdgxYsEdXH0SUay4Y0JHwOtwLIJbagTileJYGklug)
 
 As you can see within the # **else** statement which happens when the binary is compiled with debug mode off, there is a function that checks if the clients and the servers certificate match. But look at what happens within the debug mode, it just returns true and because this happens on the client side... our client emulator can do the same to initiate a valid SSL communication with the server. Let&#39;s keep this in mind and continue. What happens next is a bit tricky, in line **290** inside the **Client** Class, **OnClientState** would be called but because it is called from the **Client** class the event registration function would hit and not the event handler function.
 
-![624x164](https://0x00sec.s3.amazonaws.com/original/2X/d/d3989424bd85ac937f044ab08bceb3cee6c0e634.png)
+![624x164](https://lh4.googleusercontent.com/JDzXo-4xolAmLdhfrZOHXCiUQdryPXVaztFOtBAfj-xICmZ5Y7MUHUQmFo6gIavmsTq_zsyPrzYGAK4diVhujKKdU3Li6vgfsjh-nTi7vXGSU9YjUXBp2DsVbIdEZtZOCQ4TPwO5AwJK5Ky5RA)
 
 We must find the **QuasarClient** class manually and from there navigate to the **OnClientState**** function**(I advise the reader to read this a few times and to play around with the source code to fully understand what this means as this is very important to understand how the client behaves, and having the source code is just a privilege to expand on our researching and coding skills). &quot;But Danus! How will we find it in this mess of unnamed functions? &quot; The answer to that is very simple, let us return to**Class0 **which is** Program.cs:**
 
-![624x114](https://0x00sec.s3.amazonaws.com/original/2X/a/a17b021202b56c3cd04b28e678375b0e25293700.png)
+![624x114](https://lh5.googleusercontent.com/p674Wu51WcQI_lfnEcRfUNQMV9JqTE5iTzgGW-pShVGMUD5koE8wAXNqBW7-ihA_qTkLZq2UT4nd1m0Tm-PcQiNgYIBbFjQB_WYF2HAx1TOEiNOusLku2DgZpN1qBh8auTUuxsi5IyjAeV_ubw)
 
-![427x215](https://0x00sec.s3.amazonaws.com/original/2X/3/343c9167f8e4d5a25b56cb171e7582278f029dc2.png)
+![427x215](https://lh3.googleusercontent.com/BzVVFEhmDVxT_eOmF2FEaSqAYuD3Q5FBsW2u_lYKUDP7BLUQ-pTCmnzXdkFz6DCnY5WgPtM1YSOOQDVRCMEkW7gAitSivcl-tiIZhJeeGIWiAoVTapbypXhNMv6BuUguboCaT3l9nYxR7dM6NA)
 
 So **Gclass27** is **QuasarClient** , lets rename it so it would be easier to navigate to it, then we&#39;ll access this class by double clicking it and try to find **OnClientState** Manually.
 
@@ -185,21 +185,21 @@ So **Gclass27** is **QuasarClient** , lets rename it so it would be easier to na
 
 Here it is, let&#39;s place a breakpoint on line **79** , and set a breakpoint inside the **PayloadWriter WriteBytes** function we found earlier which is located inside dnspy under **Stream1, method02**. On line 79 **Class18** is created, and then passed into the send function. Class 18 is called **ClientIdentification** within the source code of Quasar:
 
-![624x355](https://0x00sec.s3.amazonaws.com/original/2X/b/bf4ac3b3b625c7c500a4dd55928ffa1a72dddd9a.png)
+![624x406](https://lh4.googleusercontent.com/DfyeA0y3IoaTpbrUvr7VKCJT3KvGcufsB_aubRnTGlaYNtWwCK2DX2Xiw0ZAsX7kvI1eZgHVcEesHk7dkRdTs7wPDO1lsvc9s_bZdH7Z5SS4Ou3pcfQ0D7S1TD4OnC9RAEofgPq15Eu_Ni3b1Q)
 
 Which is the message constructor and if we continue the execution up until the payload writer, we can see the contents of this message:
 
-![624x420](https://0x00sec.s3.amazonaws.com/original/2X/9/9565726de9eedb99624699985a56804ad3e7c0cb.png)
+![624x420](https://lh3.googleusercontent.com/YWRLXasRCOZWhzhYbZYx9gKiGthhP8n7SI_KSQJ5BBTCnE5B6TLFAZ0_YbGFPX2WHimNV1IQLF5D31BvjXxhBtAkxeel3J6m67aCZ37-wfv7SGsD2iVBykqLtUQtmdGO9wHSa2wK50U7k-T1MA)
 
-![624x381](https://0x00sec.s3.amazonaws.com/original/2X/e/eb8d46a63634307cfbe05a594da7ddad5224ce61.png)
+![624x381](https://lh5.googleusercontent.com/NRLopRJ2-rF6KNTqgrGdLO-CM6vcG7owULG8lRq5KnCYqA0THjlMgd0S1EU4mCF9wTzeYCa2pNy96izyJ0iVsi_rI3auWl6tkn6glweMuHk3S3hp4pWD7CsVNgGpiC4v3B0o5KaJp4YxX4zc8w)
 
 And we just intercepted the entire message. Easy. But how ever I do want to note something strange, there are only 14 members inside the **ClientIdentification** class but here inside the debugged message there are 28?
 
-![502x101](https://0x00sec.s3.amazonaws.com/original/2X/f/f6d7a5e01006c93dcce010e4378ed6b3d5e4d4fe.png)
+![502x101](https://lh5.googleusercontent.com/9vgAaMFirDbEPUcGSQ2tDLAtVnUGgRH7jQq_xVEV9dj0qLCdnXrENo4yVUaaBzJRHMVQYQ5z6wlURkZcokkUY0NEN8U7noEIsmW-AMb_HQhjwF5zAznuWzG5pAROu-yuIVHXQLAUmSLGYnBjXw)
 
 In addition, in line 38 the message gets copied into a stream and **serialized** then the length of the message is sent and then the raw bytes returned from the **serializer** function are sent. What in the hell is a **Serializer** and why are there **28** items in the message protocol when there should be only **14**? Also look at the contents of the message after it gets serialized. First let&#39;s debug the program until line **40** and view the contents of the **array** variable by right click it and then clicking on **show memory window**.
 
-![624x223](https://0x00sec.s3.amazonaws.com/original/2X/9/993e49da57198dfd3533f8c359fc7db2de727926.png)
+![624x223](https://lh4.googleusercontent.com/1mUnHF2DbZ7v0PKOyiSspmU3leQKDEkvgW8K2m8yG7_lPpaBRoi2jqpk6jEMJVWERMuUZCIT5wl7dZNBN2et9Y8Lthgyj7cR8tXGE0rezSBWcWbItambsgSJJ6Fs1MaBSXjfeCaSDclDmV_V9Q)
 
 One can recognize some the message text but there are so many extra bytes here that just don&#39;t make sense at all.
 
