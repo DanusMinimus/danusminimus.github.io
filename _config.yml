@@ -5,7 +5,7 @@ header_pages:
 style: dark # dark (default), light or hacker
 listen_for_clients_preferred_style: true # false (default) or true
 
-footer: '<a href="https://twitter.com/danusminimus"><img src="/images/retro.png" width="50" height="50"></a>'
+footer: '<a href="https://twitter.com/danusminimus"><img src="/images/retro.png" width="40" height="40"></a>'
 
 markdown: kramdown
 remote_theme: b2a3e8/jekyll-theme-console
