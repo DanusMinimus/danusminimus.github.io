@@ -5,6 +5,6 @@ header_pages:
 style: dark # dark (default), light or hacker
 listen_for_clients_preferred_style: true # false (default) or true
 
-footer: '<a href="https://twitter.com/danusminimus"><img src="/images/retro.png" style="width:42px;height:42px;"></a>'
+footer: '<a href="https://twitter.com/danusminimus"><img src="/images/retro.png" style="width:12px;height:12px;"></a>'
 
 google_analytics: UA-NNNNNNNN-N
