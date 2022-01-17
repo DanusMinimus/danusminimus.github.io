@@ -1,8 +1,6 @@
 header_pages:
   - index.md
   - about.md
-  
-avatar: https://avatars1.githubusercontent.com/u/60087084?s=460&v=4
 
 style: dark # dark (default), light or hacker
 listen_for_clients_preferred_style: true # false (default) or true
