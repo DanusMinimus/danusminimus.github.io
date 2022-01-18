@@ -5,7 +5,7 @@ header_pages:
 style: dark # dark (default), light or hacker
 listen_for_clients_preferred_style: false # false (default) or true
 
-footer: '<a href="https://twitter.com/danusminimus"><img src="/images/retro.png" width="40" height="40"></a><a href="https://www.linkedin.com/in/danlis97"><img src="/images/linkdin.png" width="30" height="30"></a>'
+footer: '<a href="https://twitter.com/danusminimus"><img src="/images/retro.png" width="30" height="30"></a><a href="https://www.linkedin.com/in/danlis97"><img src="/images/linkdin.png" width="30" height="30"></a>'
 
 markdown: kramdown
 
