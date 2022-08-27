@@ -89,6 +89,14 @@ That also wasn't very helpful. Well.. I did my best right?
 
 See you guys next time!
 
+**Update 8/27/2022:**
+Thanks to [@1ZRR4H](https://twitter.com/1ZRR4H) who took a good look at the ransomware note saw that the TOX-ID in the ransom note is the same one found in [Rever Ransomware notes](https://www.enigmasoftware.com/reverransomware-removal/). A simple google search of the TOX-ID confirms it:
+
+![](/images/freeloader_blog/15.jpg)
+
+[@Amigo_A_](https://twitter.com/Amigo_A_) has written about Rever ransomware. Read more about Rever Ransomware here:
+https://id-ransomware.blogspot.com/2022/07/rever-ransomware.html
+
 # Chapter Four – IoC appendix
 
 AVG.MSI - b6373b520a21c2e354b805d85a45a92d
