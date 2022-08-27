@@ -53,7 +53,7 @@ Great! Now for the missing batch file and the ransomware note. The only way I co
 
 Back in the day, I used open malware repositories, or I begged from my researcher friends to use their VTI access and download samples for me. The latter will obviously hurt our fragile ego so lets start looking up avg.exe and avg.msi in open malware repositories.
 
-I searched the hashes in AnyRun, Malware Bazaar and Google. Finally, I hit the jackpot with Hybrid Analysis which allows registered users to download samples!
+I searched the hashes in AnyRun, Malshare, Malware Bazaar and Google. Finally, I hit the jackpot with Hybrid Analysis which allows registered users to download samples!
 
 ![](/images/freeloader_blog/9.jpg)
 
