@@ -1,0 +1,251 @@
+---
+---
+
+@import 'main';
+
+/* Cyber Theme Override - Muted Green (#4ade80) on Black */
+:root {
+  /* Override dark theme as the base */
+  --main-bg: #000000;
+  --mask-bg: #0a0a0a;
+  --main-border-color: #1a1a1a;
+
+  /* Text colors */
+  --text-color: #e0e0e0;
+  --text-muted-color: #888888;
+  --text-muted-highlight-color: #4ade80;
+  --heading-color: #ffffff;
+  --label-color: #4ade80;
+
+  /* Links - cyber green */
+  --link-color: #4ade80;
+  --link-underline-color: #2d8a4e;
+
+  /* Blockquotes */
+  --blockquote-border-color: #4ade80;
+  --blockquote-text-color: #a0a0a0;
+
+  /* Buttons */
+  --button-bg: #0a0a0a;
+  --btn-border-color: #1a3d1a;
+  --btn-backtotop-color: #4ade80;
+  --btn-backtotop-border-color: #1a3d1a;
+
+  /* Cards */
+  --card-header-bg: #0a0a0a;
+  --card-bg: #050505;
+  --card-hover-bg: #0f1f0f;
+  --card-shadow: rgba(74, 222, 128, 0.1) 0 6px 18px 0,
+    rgba(74, 222, 128, 0.05) 0 0 0 1px;
+
+  /* Checkbox */
+  --checkbox-color: #4ade80;
+  --checkbox-checked-color: #4ade80;
+
+  /* Sidebar */
+  --site-title-color: #4ade80;
+  --site-subtitle-color: #2d8a4e;
+  --sidebar-bg: #000000;
+  --sidebar-border-color: #1a1a1a;
+  --sidebar-muted-color: #666666;
+  --sidebar-active-color: #4ade80;
+  --sidebar-hover-bg: #0a1f0a;
+  --sidebar-btn-bg: #0a0a0a;
+  --sidebar-btn-color: #4ade80;
+  --avatar-border-color: #4ade80;
+
+  /* Topbar */
+  --topbar-bg: rgba(0, 0, 0, 0.9);
+  --topbar-text-color: #e0e0e0;
+  --search-border-color: #1a3d1a;
+  --search-icon-color: #4ade80;
+  --input-focus-border-color: #4ade80;
+
+  /* Home page */
+  --post-list-text-color: #e0e0e0;
+  --btn-patinator-text-color: #4ade80;
+  --btn-paginator-hover-color: #0a1f0a;
+
+  /* Posts */
+  --toc-highlight: #4ade80;
+  --toc-popup-border-color: #1a3d1a;
+  --tag-hover: #0a1f0a;
+  --tb-odd-bg: #050505;
+  --tb-even-bg: #0a0a0a;
+  --tb-border-color: #1a1a1a;
+  --footnote-target-bg: #1a3d1a;
+  --btn-share-color: #4ade80;
+  --btn-share-hover-color: #6ee7a0;
+
+  /* Keyboard */
+  --kbd-wrap-color: #4ade80;
+  --kbd-text-color: #4ade80;
+  --kbd-bg-color: #0a0a0a;
+
+  /* Prompts */
+  --prompt-text-color: rgba(224, 224, 224, 0.85);
+  --prompt-tip-bg: rgba(74, 222, 128, 0.15);
+  --prompt-tip-icon-color: #4ade80;
+  --prompt-info-bg: rgba(74, 222, 128, 0.1);
+  --prompt-info-icon-color: #4ade80;
+  --prompt-warning-bg: rgba(255, 165, 0, 0.15);
+  --prompt-warning-icon-color: #ffa500;
+  --prompt-danger-bg: rgba(255, 0, 0, 0.15);
+  --prompt-danger-icon-color: #ff4444;
+
+  /* Tags */
+  --tag-border: #1a3d1a;
+  --tag-shadow: #0a0a0a;
+  --dash-color: #1a3d1a;
+  --search-tag-bg: #0a1f0a;
+
+  /* Categories */
+  --categories-border: rgba(74, 222, 128, 0.2);
+  --categories-hover-bg: #0a1f0a;
+  --categories-icon-hover-color: #4ade80;
+  --categories-icon-color: #4ade80;
+
+  /* Archive */
+  --timeline-node-bg: #4ade80;
+  --timeline-color: #1a3d1a;
+  --timeline-year-dot-color: #4ade80;
+
+  /* Code highlight - cyber terminal style */
+  --language-border-color: #1a3d1a;
+  --highlight-bg-color: #050505;
+  --highlighter-rouge-color: #4ade80;
+  --highlight-lineno-color: #2d8a4e;
+  --inline-code-bg: rgba(74, 222, 128, 0.1);
+  --code-color: #4ade80;
+  --code-header-text-color: #4ade80;
+  --code-header-muted-color: #1a3d1a;
+  --code-header-icon-color: #2d8a4e;
+  --clipboard-checked-color: #4ade80;
+  --filepath-text-color: #4ade80;
+}
+
+/* Additional cyber styling */
+html[data-mode="dark"],
+html:not([data-mode]) {
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1a3d1a;
+    border-radius: 4px;
+
+    &:hover {
+      background: #4ade80;
+    }
+  }
+
+  /* Selection highlight */
+  ::selection {
+    background: rgba(74, 222, 128, 0.3);
+    color: #ffffff;
+  }
+
+  /* Sidebar title glow effect */
+  #sidebar .site-title a {
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+  }
+
+  /* Link hover glow */
+  a:hover {
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+  }
+
+  /* Code block terminal feel */
+  .highlight {
+    border: 1px solid #1a3d1a;
+
+    pre {
+      background: #000000 !important;
+    }
+  }
+
+  /* Inline code cyber style */
+  code {
+    color: #4ade80;
+    background-color: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+  }
+
+  /* Post cards glow on hover */
+  .card:hover {
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
+  }
+
+  /* Avatar border glow */
+  #sidebar #avatar img {
+    border: 2px solid #4ade80;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+  }
+
+  /* Active nav item highlight */
+  #sidebar .nav-item.active .nav-link {
+    color: #4ade80 !important;
+    background: rgba(74, 222, 128, 0.1);
+  }
+
+  /* Footer links */
+  #sidebar .sidebar-bottom a {
+    color: #4ade80;
+
+    &:hover {
+      color: #6ee7a0;
+    }
+  }
+
+  /* TOC active highlight */
+  #toc-wrapper li a.active {
+    color: #4ade80 !important;
+  }
+
+  /* Tag pills */
+  .post-tag {
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid #1a3d1a;
+    color: #4ade80;
+
+    &:hover {
+      background: rgba(74, 222, 128, 0.2);
+    }
+  }
+
+  /* Pagination */
+  .pagination .page-link {
+    color: #4ade80;
+    background: #000000;
+    border-color: #1a3d1a;
+
+    &:hover {
+      background: #0a1f0a;
+    }
+  }
+
+  .pagination .page-item.active .page-link {
+    background: #4ade80;
+    color: #000000;
+    border-color: #4ade80;
+  }
+
+}
+
+/* Syntax highlighting overrides for cyber look */
+.highlight {
+  .c, .c1, .cm { color: #666666; } /* comments */
+  .k, .kd, .kn, .kp, .kr { color: #4ade80; } /* keywords */
+  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #22c55e; } /* strings */
+  .n, .na, .nb, .nc, .nd, .ne, .nf, .ni, .nl, .nn, .no, .nt, .nv { color: #e0e0e0; } /* names */
+  .m, .mf, .mh, .mi, .mo { color: #86efac; } /* numbers */
+  .o, .ow, .p { color: #e0e0e0; } /* operators, punctuation */
+  .err { color: #ff4444; } /* errors */
+}
