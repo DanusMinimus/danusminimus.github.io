@@ -15,10 +15,15 @@
   margin-left: 0 !important;
 }
 
-/* Fix avatar - remove double circle */
+/* Fix avatar - circular profile image */
 a#avatar,
 #avatar.rounded-circle {
-  border: none !important;
+  display: block !important;
+  width: 7rem !important;
+  height: 7rem !important;
+  overflow: hidden !important;
+  border-radius: 50% !important;
+  border: 3px solid #ffffff !important;
   box-shadow: none !important;
   background: transparent !important;
   padding: 0 !important;
@@ -27,8 +32,8 @@ a#avatar,
 
 a#avatar img,
 #avatar img {
-  border-radius: 50% !important;
-  border: 3px solid #ffffff !important;
+  border-radius: 0 !important;
+  border: none !important;
   box-shadow: none !important;
   outline: none !important;
   width: 100% !important;
