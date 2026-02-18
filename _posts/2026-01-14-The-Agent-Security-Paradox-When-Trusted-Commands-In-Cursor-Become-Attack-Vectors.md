@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "The Agent Security Paradox: When Trusted Commands in Cursor Become Attack Vectors"
+title: "Cursor Allowlist bypass (CVE-2026-22708)"
 categories: [Security Research]
 tags: [ai-security, prompt-injection, sandbox-bypass, cursor, agentic-ide, cve]
 image: /assets/img/agent-security-paradox/attack-overview.webp
