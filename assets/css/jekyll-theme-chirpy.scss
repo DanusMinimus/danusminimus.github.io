@@ -31,6 +31,9 @@ a#avatar img,
   border: 3px solid #ffffff !important;
   box-shadow: none !important;
   outline: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 
 /* Dark theme color overrides */
