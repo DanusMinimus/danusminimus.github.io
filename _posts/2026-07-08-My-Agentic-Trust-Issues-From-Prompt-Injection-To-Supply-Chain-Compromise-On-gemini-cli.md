@@ -7,9 +7,9 @@ tags: [ai-security, prompt-injection, supply-chain, github-actions, ci-cd, gemin
 
 ## Executive Summary
 
-Pillar Security researchers identified a CVSS 10 critical vulnerability (dubbed TrustIssues) in Google's AI powered GitHub workflows that allowed any external attacker, with nothing more than a public GitHub issue, to a full supply chain compromise of the gemini-cli repository, Google's AI coding agent with 101,000+ stars.
+I identified a CVSS 10 critical vulnerability (dubbed TrustIssues) in Google's AI powered GitHub workflows that allowed any external attacker, with nothing more than a public GitHub issue, to a full supply chain compromise of the gemini-cli repository, Google's AI coding agent with 101,000+ stars.
 
-The critical severity rating reflects a specific bypass our researcher Dan Lisichkin identified inside Gemini CLI itself. The strategic impact is what that vulnerability enabled: a complete supply-chain compromise of Google's gemini-cli repository.
+The critical severity rating reflects a specific bypass I identified inside Gemini CLI itself. The strategic impact is what that vulnerability enabled: a complete supply-chain compromise of Google's gemini-cli repository.
 
 The attack worked in four steps:
 
@@ -18,7 +18,7 @@ The attack worked in four steps:
 - **The exploit.** Under the attacker's instructions, the Gemini agent extracts the workflow internal secrets from the build environment and exfiltrates them to an attacker-controlled server. From those credentials, the attacker pivots to a token with full write access on the repository.
 - **The impact.** Full supply-chain compromise. The attacker can push arbitrary code to the main branch of gemini-cli's repository, which then ships to every downstream user.
 
-We confirmed this vulnerability on gemini-cli and identified the same vulnerable workflow across at least eight other Google repositories.
+I confirmed this vulnerability on gemini-cli and identified the same vulnerable workflow across at least eight other Google repositories.
 
 Google patched the vulnerability two days after reporting and released a fixed version of gemini-cli (version 0.39.1).
 
@@ -49,25 +49,25 @@ Simon Willison coined the term "lethal trifecta" for three properties that, comb
 
 CI/CD pipelines contain the entire combination. Workflow secrets sit in the runner's process tree. Every issue body and PR description on a public repository is attacker-controlled input. Any tool that can write somewhere readable works as an exfiltration channel, including `gh issue edit`, and `echo` to runner logs that are publicly visible.
 
-The pattern we focused on is AI-powered issue triage: an agent reads a new issue, picks a label, and writes it back. Google's implementation of this pattern met all three conditions.
+The pattern I focused on is AI-powered issue triage: an agent reads a new issue, picks a label, and writes it back. Google's implementation of this pattern met all three conditions.
 
-## How We Found It: The Draco Discovery
+## How I Found It: The Draco Discovery
 
-During routine research, one of our automated workflow scanners detected a GitHub Actions workflow with an AI injection entry point. It was a Gemini-powered issue triage workflow deployed by Google across multiple repositories. The workflow uses the `run-gemini-cli` action and triggers on `issues: opened`, so any GitHub user can activate it by opening an issue.
+During routine research, an automated workflow scanner I run detected a GitHub Actions workflow with an AI injection entry point. It was a Gemini-powered issue triage workflow deployed by Google across multiple repositories. The workflow uses the `run-gemini-cli` action and triggers on `issues: opened`, so any GitHub user can activate it by opening an issue.
 
 The agent runs Gemini CLI in `--yolo` mode, which auto-approves every tool call without human confirmation. The allowed tools include `gh issue edit` and shell access, enough to read files and execute commands. The issue body feeds directly into the agent's prompt without sanitization.
 
-We first identified this workflow on the `google/draco` repository. To confirm the vulnerability, we crafted a prompt injection that induced Gemini to execute the following command:
+I first identified this workflow on the `google/draco` repository. To confirm the vulnerability, I crafted a prompt injection that induced Gemini to execute the following command:
 
 ```bash
 gh issue edit "${ISSUE_NUMBER}" --body "$(cat /proc/$PPID/environ 2>&1 | tr '\0' '\n' | sort)"
 ```
 
-This read the parent process's environment variables and wrote them into the public issue body. The leaked environment included the workflow's `GEMINI_API_KEY`, and OIDC credentials. We immediately blanked the issue body and reported the leak to Google who mitigated the issue in less than a day.
+This read the parent process's environment variables and wrote them into the public issue body. The leaked environment included the workflow's `GEMINI_API_KEY`, and OIDC credentials. I immediately blanked the issue body and reported the leak to Google who mitigated the issue in less than a day.
 
 ### Full Supply-Chain Compromise on gemini-cli
 
-After confirming the vulnerability on `google/draco` and reporting it to Google, we turned our attention to the broader blast radius. The same workflow template was deployed across multiple Google repositories, but the highest-value target was `google-gemini/gemini-cli`, a repository with over 100,000 stars and active use as Google's flagship AI coding agent.
+After confirming the vulnerability on `google/draco` and reporting it to Google, I turned my attention to the broader blast radius. The same workflow template was deployed across multiple Google repositories, but the highest-value target was `google-gemini/gemini-cli`, a repository with over 100,000 stars and active use as Google's flagship AI coding agent.
 
 The triage workflow on gemini-cli had the same prompt injection entry point, but the exploitation path to full repository compromise required several additional steps. Here is how the full chain works.
 
@@ -130,9 +130,9 @@ Using the stolen triage token, the attacker triggers `smoke-test.yml` pointing a
 
 ### Proof of concept
 
-We built a full end-to-end PoC demonstrating this attack chain. We copied both `smoke-test.yml` and the automated triage workflow into our own organization and reproduced the complete escalation from prompt injection to pushing code to main.
+I built a full end-to-end PoC demonstrating this attack chain. I copied both `smoke-test.yml` and the automated triage workflow into my own organization and reproduced the complete escalation from prompt injection to pushing code to main.
 
-The only modification we made was relaxing the system prompt in the Gemini labeling step. This was deliberate. The purpose of the PoC was to demonstrate the post-injection privilege escalation path, not to demonstrate that the system prompt can be bypassed. System prompts are not a reliable security boundary against prompt injection, and defeating the prompt would not change the underlying vulnerability or its impact.
+The only modification I made was relaxing the system prompt in the Gemini labeling step. This was deliberate. The purpose of the PoC was to demonstrate the post-injection privilege escalation path, not to demonstrate that the system prompt can be bypassed. System prompts are not a reliable security boundary against prompt injection, and defeating the prompt would not change the underlying vulnerability or its impact.
 
 *The video is dubbed in English — enable sound to follow along.*
 
@@ -143,18 +143,18 @@ The only modification we made was relaxing the system prompt in the Gemini label
 
 ## Responsible Disclosure Timeline
 
-- **April 16, 2026:** Pillar Security reports the vulnerability to Google's OSS Vulnerability Rewards Program with a proof-of-concept against `google/draco`. Exposed secrets are documented and issue bodies are blanked.
+- **April 16, 2026:** I report the vulnerability to Google's OSS Vulnerability Rewards Program with a proof-of-concept against `google/draco`. Exposed secrets are documented and issue bodies are blanked.
 - **April 16, 2026:** Google acknowledges the report, files internal bugs with the product team, and deletes the exposed issues.
-- **April 17, 2026:** Pillar provides additional scope analysis. Vulnerable workflows identified across additional Google repositories.
-- **April 17, 2026:** Pillar identifies the `run-gemini-cli` example templates and Best Practices page as the source of the ecosystem-wide adoption of the vulnerable pattern. As a mitigation step, Google disables the vulnerable workflow across several repositories.
+- **April 17, 2026:** I provide additional scope analysis. Vulnerable workflows identified across additional Google repositories.
+- **April 17, 2026:** I identify the `run-gemini-cli` example templates and Best Practices page as the source of the ecosystem-wide adoption of the vulnerable pattern. As a mitigation step, Google disables the vulnerable workflow across several repositories.
 - **April 20, 2026:** Full supply-chain compromise PoC against gemini-cli demonstrated and submitted.
 - **April 24, 2026:** Google publishes GHSA-wpqr-6v78-jr5g, a security advisory covering the `run-gemini-cli` action (patched in 0.1.22) and Gemini CLI (0.39.1 / 0.40.0-preview.3). Tool allowlisting is now enforced under `--yolo` mode.
 
-We would like to thank Google for the amazing cooperation and for quickly resolving this issue.
+I would like to thank Google for the amazing cooperation and for quickly resolving this issue.
 
 ## The Patch
 
-On April 24, 2026, Google published GHSA-wpqr-6v78-jr5g, covering updates to both Gemini CLI and the `run-gemini-cli` GitHub Action. The advisory addresses two separate issues: our workflow-level prompt injection vulnerability, and a separate finding related to Gemini CLI's folder trust model in headless environments, discovered by Elad Meged of Novee Security.
+On April 24, 2026, Google published GHSA-wpqr-6v78-jr5g, covering updates to both Gemini CLI and the `run-gemini-cli` GitHub Action. The advisory addresses two separate issues: my workflow-level prompt injection vulnerability, and a separate finding related to Gemini CLI's folder trust model in headless environments, discovered by Elad Meged of Novee Security.
 
 The changes relevant to this research are in the `run-gemini-cli` action (patched in version 0.1.22) and the Gemini CLI policy engine (`@google/gemini-cli` versions 0.39.1 and 0.40.0-preview.3):
 
@@ -182,7 +182,7 @@ This should be treated as a baseline requirement for any workflow that processes
 
 **Do not rely on `GITHUB_TOKEN: ''` as a mitigation.** Unsetting a token in the child process environment does not protect the parent's process memory or credentials on disk. Secrets need to be architecturally unreachable, not just absent from the agent's env.
 
-**Treat prompt injection as a privilege problem.** Prompt hardening does not change the blast radius of over-permissioned agents. The model refused five researchers who asked for secrets by name. It ran our payload because we never mentioned secrets at all.
+**Treat prompt injection as a privilege problem.** Prompt hardening does not change the blast radius of over-permissioned agents. The model refused five researchers who asked for secrets by name. It ran my payload because I never mentioned secrets at all.
 
 ## Conclusion
 
