@@ -3,7 +3,20 @@
 
 @import 'main.bundle';
 
-/* Cyber Theme Override - Muted Green (#4ade80) on Black */
+/* Cyber Theme Override - Blue (#58a6ff) + Red (#f85149) on Dark Gray */
+
+/* Palette — change these to reskin the whole site */
+$bg:          #16191d; // dark gray
+$bg-alt:      #1e2329; // cards, code, masks
+$bg-btn:      #262c33; // buttons, hover surfaces
+$border:      #30363d;
+$text:        #c9d1d9;
+$muted:       #8b949e;
+$heading:     #f0f6fc;
+$accent:      #58a6ff; // primary — links, titles
+$accent-soft: #79c0ff; // primary hover / brighter
+$pop:         #f85149; // red accent — emphasis, active, underlines
+$pop-soft:    #ff7b72; // red hover
 
 /* Fix list bullets that shouldn't appear */
 #sidebar ul,
@@ -44,107 +57,114 @@ a#avatar img,
 /* Dark theme color overrides */
 html[data-mode="dark"],
 html:not([data-mode]) {
-  --main-bg: #0d1117;
-  --mask-bg: #161b22;
-  --main-border-color: #30363d;
+  --main-bg: #{$bg};
+  --mask-bg: #{$bg-alt};
+  --main-border-color: #{$border};
 
   /* Text colors */
-  --text-color: #c9d1d9;
-  --text-muted-color: #8b949e;
-  --heading-color: #f0f6fc;
-  --label-color: #4ade80;
+  --text-color: #{$text};
+  --text-muted-color: #{$muted};
+  --heading-color: #{$heading};
+  --label-color: #{$accent};
 
-  /* Links - cyber green */
-  --link-color: #4ade80;
-  --link-underline-color: #238636;
+  /* Links - blue */
+  --link-color: #{$accent};
+  --link-underline-color: #{$pop};
 
   /* Sidebar */
-  --site-title-color: #4ade80;
-  --site-subtitle-color: #8b949e;
-  --sidebar-bg: #0d1117;
-  --sidebar-border-color: #30363d;
-  --sidebar-muted-color: #8b949e;
-  --sidebar-active-color: #4ade80;
-  --sidebar-hover-bg: #161b22;
-  --sidebar-btn-bg: #21262d;
-  --sidebar-btn-color: #4ade80;
+  --site-title-color: #{$accent};
+  --site-subtitle-color: #{$muted};
+  --sidebar-bg: #{$bg};
+  --sidebar-border-color: #{$border};
+  --sidebar-muted-color: #{$muted};
+  --sidebar-active-color: #{$accent};
+  --sidebar-hover-bg: #{$bg-alt};
+  --sidebar-btn-bg: #{$bg-btn};
+  --sidebar-btn-color: #{$accent};
   --avatar-border-color: transparent;
 
   /* Topbar */
-  --topbar-bg: rgba(13, 17, 23, 0.95);
-  --topbar-text-color: #c9d1d9;
-  --search-border-color: #30363d;
-  --search-icon-color: #4ade80;
-  --input-focus-border-color: #4ade80;
+  --topbar-bg: rgba(22, 25, 29, 0.95);
+  --topbar-text-color: #{$text};
+  --search-border-color: #{$border};
+  --search-icon-color: #{$accent};
+  --input-focus-border-color: #{$accent};
 
   /* Cards & posts */
-  --card-header-bg: #161b22;
-  --card-bg: #0d1117;
-  --card-hover-bg: #161b22;
-  --post-list-text-color: #c9d1d9;
+  --card-header-bg: #{$bg-alt};
+  --card-bg: #{$bg};
+  --card-hover-bg: #{$bg-alt};
+  --post-list-text-color: #{$text};
 
   /* Code */
-  --highlight-bg-color: #161b22;
-  --highlighter-rouge-color: #4ade80;
-  --inline-code-bg: rgba(74, 222, 128, 0.1);
-  --code-color: #4ade80;
+  --highlight-bg-color: #{$bg-alt};
+  --highlighter-rouge-color: #{$accent};
+  --inline-code-bg: rgba(88, 166, 255, 0.1);
+  --code-color: #{$accent};
 
   /* Buttons & pagination */
-  --btn-border-color: #30363d;
-  --btn-backtotop-color: #4ade80;
+  --btn-border-color: #{$border};
+  --btn-backtotop-color: #{$accent};
 
   /* Tags */
-  --tag-border: #30363d;
-  --tag-hover: #238636;
+  --tag-border: #{$border};
+  --tag-hover: #{$pop};
 
   /* Categories */
-  --categories-border: #30363d;
-  --categories-hover-bg: #161b22;
-  --categories-icon-hover-color: #4ade80;
+  --categories-border: #{$border};
+  --categories-hover-bg: #{$bg-alt};
+  --categories-icon-hover-color: #{$accent};
 
   /* Timeline */
-  --timeline-node-bg: #4ade80;
-  --timeline-color: #30363d;
+  --timeline-node-bg: #{$pop};
+  --timeline-color: #{$border};
 
   /* TOC */
-  --toc-highlight: #4ade80;
+  --toc-highlight: #{$accent};
+
+  /* Blockquote / prompts */
+  --blockquote-border-color: #{$pop};
 }
 
 /* Sidebar fixes */
 #sidebar {
-  background: #0d1117 !important;
+  background: $bg !important;
 
   .site-title a {
-    color: #4ade80 !important;
+    color: $accent !important;
   }
 
   .site-subtitle {
-    color: #8b949e !important;
+    color: $muted !important;
   }
 
   .nav-link {
-    color: #c9d1d9 !important;
+    color: $text !important;
 
     &:hover,
     &.active {
-      color: #4ade80 !important;
-      background: rgba(74, 222, 128, 0.1) !important;
+      color: $accent !important;
+      background: rgba(88, 166, 255, 0.1) !important;
     }
   }
 
   .sidebar-bottom a {
-    color: #4ade80 !important;
+    color: $accent !important;
+
+    &:hover {
+      color: $pop !important;
+    }
   }
 }
 
 
 /* Main content area */
 body {
-  background: #0d1117 !important;
+  background: $bg !important;
 }
 
 #main-wrapper {
-  background: #0d1117 !important;
+  background: $bg !important;
 }
 
 /* Post list */
@@ -160,57 +180,57 @@ body {
     list-style: none !important;
 
     .page-link {
-      background: #161b22 !important;
-      border-color: #30363d !important;
-      color: #c9d1d9 !important;
+      background: $bg-alt !important;
+      border-color: $border !important;
+      color: $text !important;
 
       &:hover {
-        background: #21262d !important;
-        color: #4ade80 !important;
+        background: $bg-btn !important;
+        color: $accent !important;
       }
     }
 
     &.active .page-link {
-      background: #4ade80 !important;
-      color: #0d1117 !important;
-      border-color: #4ade80 !important;
+      background: $accent !important;
+      color: $bg !important;
+      border-color: $accent !important;
     }
   }
 }
 
 /* Links */
 a {
-  color: #4ade80;
+  color: $accent;
 
   &:hover {
-    color: #6ee7a0;
+    color: $accent-soft;
   }
 }
 
 /* Code blocks */
 .highlight {
-  background: #161b22 !important;
-  border: 1px solid #30363d !important;
+  background: $bg-alt !important;
+  border: 1px solid $border !important;
   border-radius: 6px !important;
 }
 
 code {
-  color: #4ade80 !important;
-  background: rgba(74, 222, 128, 0.1) !important;
+  color: $accent !important;
+  background: rgba(88, 166, 255, 0.1) !important;
 }
 
 /* Syntax highlighting */
 .highlight {
-  .c, .c1, .cm { color: #8b949e; }
-  .k, .kd, .kn, .kp, .kr { color: #ff7b72; }
+  .c, .c1, .cm { color: $muted; }
+  .k, .kd, .kn, .kp, .kr { color: $pop-soft; }
   .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #a5d6ff; }
-  .n, .na, .nb, .nc, .nd, .ne, .nf, .ni, .nl, .nn, .no, .nt, .nv { color: #c9d1d9; }
-  .m, .mf, .mh, .mi, .mo { color: #79c0ff; }
-  .o, .ow, .p { color: #c9d1d9; }
+  .n, .na, .nb, .nc, .nd, .ne, .nf, .ni, .nl, .nn, .no, .nt, .nv { color: $text; }
+  .m, .mf, .mh, .mi, .mo { color: $accent; }
+  .o, .ow, .p { color: $text; }
 }
 
 /* Selection */
 ::selection {
-  background: rgba(74, 222, 128, 0.3);
+  background: rgba(248, 81, 73, 0.35);
   color: #ffffff;
 }
