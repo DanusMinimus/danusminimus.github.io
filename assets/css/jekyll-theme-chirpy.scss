@@ -64,6 +64,7 @@ html:not([data-mode]) {
   /* Text colors */
   --text-color: #{$text};
   --text-muted-color: #{$muted};
+  --text-muted-highlight-color: #{$text};
   --heading-color: #{$heading};
   --label-color: #{$accent};
 
@@ -233,4 +234,15 @@ code {
 ::selection {
   background: rgba(248, 81, 73, 0.35);
   color: #ffffff;
+}
+
+/* Footer - distinct panel so the hairline reads as intentional */
+footer {
+  background-color: $bg-alt !important;
+  border-top: 1px solid $border !important;
+
+  em {
+    font-style: normal !important;
+    color: $accent !important;
+  }
 }
