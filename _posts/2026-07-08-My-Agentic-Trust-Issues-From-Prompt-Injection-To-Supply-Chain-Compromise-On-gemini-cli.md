@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "My Agentic Trust Issues: From Prompt Injection to Supply-Chain Compromise on gemini-cli"
-categories: [Security Research]
+categories: [AI Security Research, Supply Chain]
 tags: [ai-security, prompt-injection, supply-chain, github-actions, ci-cd, gemini-cli, google, agentic-ai]
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Cursor Allowlist Bypass (CVE-2026-22708)"
-categories: [Security Research]
+categories: [AI Security Research, Agentic IDEs]
 tags: [ai-security, prompt-injection, sandbox-bypass, cursor, agentic-ide, cve]
 image: /assets/img/agent-security-paradox/attack-overview.webp
 ---
