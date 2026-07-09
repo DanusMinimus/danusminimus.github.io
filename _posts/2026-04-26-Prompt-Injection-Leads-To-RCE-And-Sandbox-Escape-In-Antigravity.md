@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Prompt Injection leads to RCE and Sandbox Escape in Antigravity"
-categories: [Security Research]
+categories: [AI Security Research, Agentic IDEs]
 tags: [ai-security, prompt-injection, sandbox-bypass, antigravity, google, agentic-ide, rce]
 ---
 
